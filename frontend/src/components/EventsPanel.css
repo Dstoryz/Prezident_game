@@ -1,0 +1,94 @@
+.events-panel {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.events-panel h3 {
+  margin: 0 0 20px 0;
+  color: white;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.no-events {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.event-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-2px);
+}
+
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.event-icon {
+  font-size: 1.5rem;
+  width: 30px;
+  text-align: center;
+}
+
+.event-title {
+  margin: 0;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.event-description {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.event-impacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.impact-item {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+}
+
+@media (max-width: 768px) {
+  .event-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .event-impacts {
+    justify-content: flex-start;
+  }
+} 

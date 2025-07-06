@@ -1,0 +1,106 @@
+.game-chart {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.game-chart h3 {
+  margin: 0 0 20px 0;
+  color: white;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.loading, .no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+.loading {
+  font-size: 1.1rem;
+}
+
+.no-data p {
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.no-data button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.no-data button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.chart-controls button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.chart-controls button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Стили для Recharts */
+.recharts-wrapper {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(255, 255, 255, 0.2);
+}
+
+.recharts-text {
+  fill: rgba(255, 255, 255, 0.8);
+}
+
+.recharts-legend-item-text {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.recharts-tooltip-wrapper {
+  background: rgba(0, 0, 0, 0.8) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.recharts-default-tooltip {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+  color: white !important;
+} 

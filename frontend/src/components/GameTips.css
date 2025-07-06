@@ -1,0 +1,226 @@
+.game-tips {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.tips-header {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.tips-header:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.tips-header h3 {
+  margin: 0;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.expand-icon {
+  color: white;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.tips-content {
+  padding: 20px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.tip-section {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tip-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.tip-section h4 {
+  color: white;
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.event-description {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.event-explanation {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+.event-impacts {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.event-impacts ul {
+  margin: 10px 0 0 0;
+  padding-left: 20px;
+}
+
+.event-impacts li {
+  margin-bottom: 5px;
+}
+
+.economic-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analysis-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+}
+
+.recommendations {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recommendation-item {
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  padding: 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.no-recommendations {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-style: italic;
+  text-align: center;
+}
+
+.parameter-tips {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.parameter-tip {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.parameter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.parameter-name {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.parameter-current {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.parameter-description {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+  line-height: 1.4;
+  font-size: 0.9rem;
+}
+
+.parameter-range {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.general-tips ul {
+  margin: 0;
+  padding-left: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.general-tips li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+/* Скроллбар для tips-content */
+.tips-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tips-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.tips-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.tips-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .tips-content {
+    padding: 15px;
+  }
+  
+  .parameter-tips {
+    grid-template-columns: 1fr;
+  }
+  
+  .tips-header {
+    padding: 12px 15px;
+  }
+  
+  .tips-header h3 {
+    font-size: 1.1rem;
+  }
+} 
