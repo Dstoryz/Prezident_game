@@ -3,12 +3,12 @@ from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import login, logout
 from django.shortcuts import get_object_or_404
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User, UserProfile
 from .serializers import (
@@ -28,19 +28,16 @@ class UserRegistrationView(APIView):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            
-            # Создаем токены
+            if user is None:
+                return Response({'error': 'Ошибка создания пользователя'}, status=status.HTTP_400_BAD_REQUEST)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             refresh = RefreshToken.for_user(user)
-            
             return Response({
                 'message': 'Пользователь успешно зарегистрирован',
                 'user': UserSerializer(user).data,
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                }
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
             }, status=status.HTTP_201_CREATED)
-        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -52,22 +49,16 @@ class UserLoginView(APIView):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            
-            # Создаем токены
+            if user is None:
+                return Response({'error': 'Ошибка авторизации'}, status=status.HTTP_400_BAD_REQUEST)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             refresh = RefreshToken.for_user(user)
-            
-            # Логируем пользователя
-            login(request, user)
-            
             return Response({
                 'message': 'Успешная авторизация',
                 'user': UserSerializer(user).data,
-                'tokens': {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                }
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
             }, status=status.HTTP_200_OK)
-        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -77,11 +68,6 @@ class UserLogoutView(APIView):
     
     def post(self, request):
         try:
-            refresh_token = request.data.get('refresh_token')
-            if refresh_token:
-                token = RefreshToken(refresh_token)
-                token.blacklist()
-            
             logout(request)
             return Response({
                 'message': 'Успешный выход'
