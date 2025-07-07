@@ -19,78 +19,78 @@
 ### Реальный сектор
 - **ВВП (Y)** рассчитывается по производственной функции Кобба-Дугласа:
   
-  \[
+  $$
   Y = A \cdot K^{\alpha} \cdot L^{1-\alpha}
-  \]
+  $$
   где:
-  - \(A\) — технологический уровень
-  - \(K\) — капитал
-  - \(L\) — рабочая сила
-  - \(\alpha\) — доля капитала (0.3)
+  - $A$ — технологический уровень
+  - $K$ — капитал
+  - $L$ — рабочая сила
+  - $\alpha$ — доля капитала (0.3)
 
 - **Инвестиции**: доля ВВП, зависящая от настроек и политики.
 - **Экспорт/импорт**: зависят от темпов роста, пошлин, событий.
 
 ### Финансы и бюджет
 - **Доходы бюджета**:
-  \[
-  \text{tax\_revenue} = Y \cdot (\text{tax\_rate} / 100)
-  \]
-  \[
-  \text{customs\_revenue} = (\text{exports} + \text{imports}) \cdot Y / 100 \cdot (\text{customs\_duty} / 100)
-  \]
-  \[
-  \text{total\_revenue} = \text{tax\_revenue} + \text{customs\_revenue}
-  \]
+  $$
+  tax\_revenue = Y \cdot (tax\_rate / 100)
+  $$
+  $$
+  customs\_revenue = (exports + imports) \cdot Y / 100 \cdot (customs\_duty / 100)
+  $$
+  $$
+  total\_revenue = tax\_revenue + customs\_revenue
+  $$
 - **Расходы бюджета**: распределяются по приоритетам (образование, здравоохранение, оборона, инфраструктура, соц. защита).
 - **Баланс**:
-  \[
-  \text{budget\_balance} = \text{total\_revenue} - \text{total\_spending}
-  \]
+  $$
+  budget\_balance = total\_revenue - total\_spending
+  $$
 - **Денежная масса**:
-  \[
+  $$
   M_{t+1} = M_t \cdot (1 + g_m) + E
-  \]
-  где \(g_m\) — естественный рост, \(E\) — эмиссия (если печатный станок включён).
+  $$
+  где $g_m$ — естественный рост, $E$ — эмиссия (если печатный станок включён).
 - **Инфляция**:
-  \[
-  \text{inflation} += (\text{money\_growth} - \text{gdp\_growth\_rate}) \cdot k
-  \]
-  где \(k\) — коэффициент чувствительности (по умолчанию 10).
+  $$
+  inflation += (money\_growth - gdp\_growth\_rate) \cdot k
+  $$
+  где $k$ — коэффициент чувствительности (по умолчанию 10).
 
 ### Демография
 - **Рост населения**:
-  \[
-  \text{new\_population} = \text{population} \cdot (1 + \text{total\_growth} / 100)
-  \]
-  где \(\text{total\_growth} = \text{natural\_growth} + \text{migration\_growth}\)
+  $$
+  new\_population = population \cdot (1 + (natural\_growth + migration\_growth) / 100)
+  $$
+  где $\text{total\_growth} = \text{natural\_growth} + \text{migration\_growth}$
 - **Естественный прирост** зависит от качества здравоохранения:
-  \[
-  \text{natural\_growth} = \text{base\_natural\_growth} \cdot (1 + (\text{healthcare\_quality} - 50) \cdot 0.01)
-  \]
+  $$
+  natural\_growth = base\_natural\_growth \cdot (1 + (healthcare\_quality - 50) \cdot 0.01)
+  $$
 - **Миграция** зависит от роста ВВП и безработицы:
-  \[
-  \text{migration\_growth} = \text{base\_migration} \cdot (1 + \text{gdp\_growth} \cdot 0.1 - \text{unemployment} \cdot 0.05)
-  \]
+  $$
+  migration\_growth = base\_migration \cdot (1 + gdp\_growth \cdot 0.1 - unemployment \cdot 0.05)
+  $$
 
 ### Социальная сфера
 - **Настроение населения**:
-  \[
-  \text{public\_mood} += (\text{social\_transfers} / (Y + 1)) \cdot 20
-  \]
+  $$
+  public\_mood += (social\_transfers / (Y + 1)) \cdot 20
+  $$
   Ограничено диапазоном 0–100.
 - **Неравенство**: зависит от налоговой ставки.
 
 ### Внешний долг и золото
 - **Покрытие дефицита**: сначала за счёт золота, затем — заимствования.
 - **Обслуживание долга**:
-  \[
-  \text{debt\_repayment} = D \cdot 0.05
-  \]
-  \[
-  \text{debt\_interest} = D \cdot 0.02
-  \]
-  где \(D\) — внешний долг.
+  $$
+  debt\_repayment = D \cdot 0.05
+  $$
+  $$
+  debt\_interest = D \cdot 0.02
+  $$
+  где $D$ — внешний долг.
 
 ---
 
@@ -109,37 +109,37 @@
 ### Формулы воздействия кризисов (пример):
 
 Пусть событие имеет параметры:
-- \(gdp\_impact\) — влияние на рост ВВП (в %)
-- \(inflation\_impact\) — влияние на инфляцию (в %)
-- \(unemployment\_impact\) — влияние на безработицу (в %)
-- \(rating\_impact\) — влияние на рейтинг президента (в %)
-- \(budget\_impact\) — влияние на бюджет (в млн $)
-- \(population\_impact\) — влияние на население (в млн чел.)
+- $gdp_impact$ — влияние на рост ВВП (в %)
+- $inflation_impact$ — влияние на инфляцию (в %)
+- $unemployment_impact$ — влияние на безработицу (в %)
+- $rating_impact$ — влияние на рейтинг президента (в %)
+- $budget_impact$ — влияние на бюджет (в млн $)
+- $population_impact$ — влияние на население (в млн чел.)
 
 Тогда итоговые значения рассчитываются так:
 
-\[
-\text{gdp\_growth}_{new} = \text{gdp\_growth}_{base} + gdp\_impact
-\]
-\[
-\text{inflation}_{new} = \text{inflation}_{base} + inflation\_impact
-\]
-\[
-\text{unemployment}_{new} = \text{unemployment}_{base} + unemployment\_impact
-\]
-\[
-\text{president\_rating}_{new} = \text{president\_rating}_{base} + rating\_impact
-\]
-\[
-\text{budget\_balance}_{new} = \text{budget\_balance}_{base} + budget\_impact
-\]
-\[
-\text{population}_{new} = \text{population}_{base} + population\_impact
-\]
+$$
+gdp\_growth_{new} = gdp\_growth_{base} + gdp\_impact
+$$
+$$
+inflation_{new} = inflation_{base} + inflation\_impact
+$$
+$$
+unemployment_{new} = unemployment_{base} + unemployment\_impact
+$$
+$$
+president\_rating_{new} = president\_rating_{base} + rating\_impact
+$$
+$$
+budget\_balance_{new} = budget\_balance_{base} + budget\_impact
+$$
+$$
+population_{new} = population_{base} + population\_impact
+$$
 
 **Пример:**
-- Экономический кризис: \(gdp\_impact = -3\), \(unemployment\_impact = +2\), \(rating\_impact = -5\)
-- Природная катастрофа: \(gdp\_impact = -1\), \(budget\_impact = -100\), \(population\_impact = -0.1\)
+- Экономический кризис: $gdp_impact = -3$, $unemployment_impact = +2$, $rating_impact = -5$
+- Природная катастрофа: $gdp_impact = -1$, $budget_impact = -100$, $population_impact = -0.1$
 
 ### Влияние кризисов на динамику
 - Кризисы могут иметь как разовый, так и накопительный эффект (например, несколько кварталов подряд).
@@ -151,73 +151,73 @@
 ## 1.3. Формулы всех основных зависимостей
 
 ### Производственная функция (ВВП):
-\[
+$$
 Y = A \cdot K^{\alpha} \cdot L^{1-\alpha}
-\]
+$$
 
 ### Доходы бюджета:
-\[
-\text{tax\_revenue} = Y \cdot (\text{tax\_rate} / 100)
-\]
-\[
-\text{customs\_revenue} = (\text{exports} + \text{imports}) \cdot Y / 100 \cdot (\text{customs\_duty} / 100)
-\]
-\[
-\text{total\_revenue} = \text{tax\_revenue} + \text{customs\_revenue}
-\]
+$$
+tax\_revenue = Y \cdot (tax\_rate / 100)
+$$
+$$
+customs\_revenue = (exports + imports) \cdot Y / 100 \cdot (customs\_duty / 100)
+$$
+$$
+total\_revenue = tax\_revenue + customs\_revenue
+$$
 
 ### Расходы бюджета:
-\[
-\text{spending}_i = \text{total\_spending} \cdot (\text{priority}_i / \sum \text{priority}_j)
-\]
+$$
+spending_i = total\_spending \cdot (priority_i / \sum priority_j)
+$$
 
 ### Баланс бюджета:
-\[
-\text{budget\_balance} = \text{total\_revenue} - \text{total\_spending}
-\]
+$$
+budget\_balance = total\_revenue - total\_spending
+$$
 
 ### Денежная масса:
-\[
+$$
 M_{t+1} = M_t \cdot (1 + g_m) + E
-\]
+$$
 
 ### Инфляция:
-\[
-\text{inflation} += (\text{money\_growth} - \text{gdp\_growth\_rate}) \cdot k
-\]
+$$
+inflation += (money\_growth - gdp\_growth\_rate) \cdot k
+$$
 
 ### Рост населения:
-\[
-\text{new\_population} = \text{population} \cdot (1 + (\text{natural\_growth} + \text{migration\_growth}) / 100)
-\]
+$$
+new\_population = population \cdot (1 + (natural\_growth + migration\_growth) / 100)
+$$
 
 ### Естественный прирост:
-\[
-\text{natural\_growth} = \text{base\_natural\_growth} \cdot (1 + (\text{healthcare\_quality} - 50) \cdot 0.01)
-\]
+$$
+natural\_growth = base\_natural\_growth \cdot (1 + (healthcare\_quality - 50) \cdot 0.01)
+$$
 
 ### Миграционный прирост:
-\[
-\text{migration\_growth} = \text{base\_migration} \cdot (1 + \text{gdp\_growth} \cdot 0.1 - \text{unemployment} \cdot 0.05)
-\]
+$$
+migration\_growth = base\_migration \cdot (1 + gdp\_growth \cdot 0.1 - unemployment \cdot 0.05)
+$$
 
 ### Настроение населения:
-\[
-\text{public\_mood} += (\text{social\_transfers} / (Y + 1)) \cdot 20
-\]
+$$
+public\_mood += (social\_transfers / (Y + 1)) \cdot 20
+$$
 
 ### Внешний долг:
-\[
-\text{debt\_repayment} = D \cdot 0.05
-\]
-\[
-\text{debt\_interest} = D \cdot 0.02
-\]
+$$
+debt\_repayment = D \cdot 0.05
+$$
+$$
+debt\_interest = D \cdot 0.02
+$$
 
 ### Рейтинг президента:
-\[
-\text{president\_rating} = 50 + 2 \cdot \text{gdp\_growth} - 2 \cdot \text{inflation} - 1.5 \cdot \text{unemployment} + 0.3 \cdot (\text{public\_mood} - 50) - 0.5 \cdot \text{budget\_deficit} + 0.2 \cdot (\text{healthcare\_quality} - 50)
-\]
+$$
+president\_rating = 50 + 2 \cdot gdp\_growth - 2 \cdot inflation - 1.5 \cdot unemployment + 0.3 \cdot (public\_mood - 50) - 0.5 \cdot budget\_deficit + 0.2 \cdot (healthcare\_quality - 50)
+$$
 
 ---
 
