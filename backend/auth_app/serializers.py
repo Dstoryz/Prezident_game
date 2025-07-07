@@ -5,27 +5,22 @@ from .models import User, UserProfile
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Сериализатор для регистрации пользователя"""
-    password = serializers.CharField(write_only=True, validators=[validate_password])
-    password_confirm = serializers.CharField(write_only=True)
-    
+    """
+    Сериализатор для регистрации пользователя (только email и пароль)
+    """
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'password_confirm', 'first_name', 'last_name']
-    
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError("Пароли не совпадают")
-        return attrs
-    
+        fields = ['email', 'password']
+
     def create(self, validated_data):
-        validated_data.pop('password_confirm')
-        user = User.objects.create_user(**validated_data)
-        
-        # Создаем профиль пользователя
+        user = User.objects.create_user(email=validated_data['email'], password=validated_data['password'])
         UserProfile.objects.create(user=user)
-        
         return user
+
+    def save(self, request=None):
+        return self.create(self.validated_data)
 
 
 class UserLoginSerializer(serializers.Serializer):

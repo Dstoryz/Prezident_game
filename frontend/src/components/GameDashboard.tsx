@@ -7,6 +7,7 @@ import EventsPanel from './EventsPanel';
 import GameChart from './GameChart';
 import GameTips from './GameTips';
 import UserProfile from './auth/UserProfile';
+import { useAuth } from '../contexts/AuthContext';
 import './GameDashboard.css';
 
 const GameDashboard: React.FC = () => {
@@ -16,6 +17,7 @@ const GameDashboard: React.FC = () => {
   const [gameOver, setGameOver] = useState(false);
   const [gameOverReason, setGameOverReason] = useState<string | null>(null);
   const [chartRefreshTrigger, setChartRefreshTrigger] = useState(0); // Триггер для обновления графика
+  const { logout } = useAuth();
 
   // Начать новую игру
   const startNewGame = async () => {
@@ -99,6 +101,7 @@ const GameDashboard: React.FC = () => {
           <h2>Ошибка</h2>
           <p>{error}</p>
           <button onClick={startNewGame}>Попробовать снова</button>
+          <button onClick={logout} style={{marginTop: '16px', background: '#dc3545', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer'}}>Выйти</button>
         </div>
       </div>
     );
@@ -150,7 +153,7 @@ const GameDashboard: React.FC = () => {
           />
           
           {game.current_indicators && (
-            <IndicatorsPanel indicators={game.current_indicators} />
+            <IndicatorsPanel indicators={game.current_indicators} budget={game.current_budget} />
           )}
         </div>
 

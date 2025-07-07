@@ -10,7 +10,7 @@ const api = axios.create({
   },
 });
 
-// Добавляем интерцептор для автоматического добавления токена авторизации
+// Интерцептор для добавления токена к запросам
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
@@ -29,34 +29,78 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      // Токен истёк, пробуем обновить
+      // Пытаемся обновить токен
       const refreshToken = localStorage.getItem('refresh_token');
       if (refreshToken) {
         try {
-          const response = await axios.post(`${API_BASE_URL}/token/refresh/`, {
-            refresh: refreshToken,
+          const response = await axios.post(`${API_BASE_URL}/dj-rest-auth/token/refresh/`, {
+            refresh: refreshToken
           });
           localStorage.setItem('access_token', response.data.access);
-          
           // Повторяем оригинальный запрос
-          error.config.headers.Authorization = `Bearer ${response.data.access}`;
-          return api.request(error.config);
+          const originalRequest = error.config;
+          originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+          return api(originalRequest);
         } catch (refreshError) {
-          // Не удалось обновить токен, перенаправляем на страницу входа
+          // Не удалось обновить токен, просто сбрасываем токены
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
-          window.location.reload();
         }
+      } else {
+        // Нет токена, просто сбрасываем токены
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
       }
     }
     return Promise.reject(error);
   }
 );
 
+export const authApi = {
+  // Регистрация
+  register: async (userData: { email: string; password: string }) => {
+    const response = await api.post('/dj-rest-auth/registration/', userData);
+    if (response.data.access) {
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+    }
+    return response.data;
+  },
+
+  // Вход
+  login: async (credentials: { email: string; password: string }) => {
+    const response = await api.post('/dj-rest-auth/login/', credentials);
+    if (response.data.access) {
+      localStorage.setItem('access_token', response.data.access);
+      localStorage.setItem('refresh_token', response.data.refresh);
+    }
+    return response.data;
+  },
+
+  // Выход
+  logout: async () => {
+    try {
+      await api.post('/dj-rest-auth/logout/');
+      // Только при успешном выходе удаляем токены
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+      // При ошибке токены НЕ удаляем, чтобы пользователь мог продолжить работу
+    }
+  },
+
+  // Получить информацию о пользователе
+  getUser: async () => {
+    const response = await api.get('/dj-rest-auth/user/');
+    return response.data;
+  },
+};
+
 export const gameApi = {
   // Начать новую игру
-  startGame: async (): Promise<ApiResponse<GameSession>> => {
-    const response = await api.post('/game/start/');
+  startGame: async (initialParameters = {}) => {
+    const response = await api.post('/game/start/', { initial_parameters: initialParameters });
     return response.data;
   },
 

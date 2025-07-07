@@ -8,11 +8,7 @@ interface RegisterFormProps {
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
     email: '',
-    username: '',
     password: '',
-    password_confirm: '',
-    first_name: '',
-    last_name: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,9 +18,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
   const handleGoogleLogin = async () => {
     setError('');
     setIsLoading(true);
-    
     try {
-      // Простое перенаправление на Google OAuth
       window.location.href = 'http://localhost:8000/accounts/google/login/';
     } catch (error) {
       setError('Ошибка при авторизации через Google');
@@ -40,26 +34,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
   };
 
   const validateForm = () => {
-    if (!formData.email || !formData.username || !formData.password || !formData.password_confirm) {
+    if (!formData.email || !formData.password) {
       setError('Пожалуйста, заполните все обязательные поля');
       return false;
     }
-
-    if (formData.password.length < 8) {
-      setError('Пароль должен содержать минимум 8 символов');
-      return false;
-    }
-
-    if (formData.password !== formData.password_confirm) {
-      setError('Пароли не совпадают');
-      return false;
-    }
-
-    if (formData.username.length < 3) {
-      setError('Имя пользователя должно содержать минимум 3 символа');
-      return false;
-    }
-
     return true;
   };
 
@@ -67,18 +45,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
     if (!validateForm()) {
       setIsLoading(false);
       return;
     }
-
     const success = await register(formData);
-    
     if (!success) {
       setError('Ошибка при регистрации. Возможно, пользователь с таким email уже существует.');
     }
-    
     setIsLoading(false);
   };
 
@@ -99,49 +73,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
             disabled={isLoading}
           />
         </div>
-
-        <div className="form-group">
-          <label htmlFor="username">Имя пользователя: *</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Введите имя пользователя"
-            required
-            disabled={isLoading}
-          />
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="first_name">Имя:</label>
-            <input
-              type="text"
-              id="first_name"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleChange}
-              placeholder="Ваше имя"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="last_name">Фамилия:</label>
-            <input
-              type="text"
-              id="last_name"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              placeholder="Ваша фамилия"
-              disabled={isLoading}
-            />
-          </div>
-        </div>
-
         <div className="form-group">
           <label htmlFor="password">Пароль: *</label>
           <input
@@ -150,28 +81,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            placeholder="Минимум 8 символов"
+            placeholder="Введите пароль"
             required
             disabled={isLoading}
           />
         </div>
-
-        <div className="form-group">
-          <label htmlFor="password_confirm">Подтвердите пароль: *</label>
-          <input
-            type="password"
-            id="password_confirm"
-            name="password_confirm"
-            value={formData.password_confirm}
-            onChange={handleChange}
-            placeholder="Повторите пароль"
-            required
-            disabled={isLoading}
-          />
-        </div>
-
         {error && <div className="error-message">{error}</div>}
-
         <button 
           type="submit" 
           className="btn btn-primary"
@@ -179,11 +94,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
         >
           {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
         </button>
-
         <div className="divider">
           <span>или</span>
         </div>
-
         <button 
           type="button" 
           className="btn btn-google"
@@ -199,7 +112,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSwitchToLogin }) => {
           Зарегистрироваться через Google
         </button>
       </form>
-
       <div className="auth-switch">
         <p>
           Уже есть аккаунт?{' '}

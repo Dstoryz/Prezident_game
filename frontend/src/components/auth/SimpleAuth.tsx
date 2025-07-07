@@ -4,11 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 const SimpleAuth: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
-    username: '',
     password: '',
-    password_confirm: '',
-    first_name: '',
-    last_name: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,10 +25,8 @@ const SimpleAuth: React.FC = () => {
     setError('');
     setSuccess('');
     setIsLoading(true);
-
     try {
       let result = false;
-      
       if (isLogin) {
         result = await login(formData.email, formData.password);
         if (result) {
@@ -51,7 +45,6 @@ const SimpleAuth: React.FC = () => {
     } catch (err) {
       setError(`Ошибка при ${isLogin ? 'входе' : 'регистрации'}`);
     }
-    
     setIsLoading(false);
   };
 
@@ -113,28 +106,6 @@ const SimpleAuth: React.FC = () => {
           />
         </div>
         
-        {!isLogin && (
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-              Имя пользователя: *
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              style={{ 
-                width: '100%', 
-                padding: '10px', 
-                border: '1px solid #ddd',
-                borderRadius: '5px',
-                fontSize: '16px'
-              }}
-            />
-          </div>
-        )}
-        
         <div style={{ marginBottom: '15px' }}>
           <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
             Пароль: *
@@ -154,70 +125,6 @@ const SimpleAuth: React.FC = () => {
             }}
           />
         </div>
-        
-        {!isLogin && (
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-              Подтвердите пароль: *
-            </label>
-            <input
-              type="password"
-              name="password_confirm"
-              value={formData.password_confirm}
-              onChange={handleChange}
-              required
-              style={{ 
-                width: '100%', 
-                padding: '10px', 
-                border: '1px solid #ddd',
-                borderRadius: '5px',
-                fontSize: '16px'
-              }}
-            />
-          </div>
-        )}
-        
-        {!isLogin && (
-          <>
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Имя:
-              </label>
-              <input
-                type="text"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                style={{ 
-                  width: '100%', 
-                  padding: '10px', 
-                  border: '1px solid #ddd',
-                  borderRadius: '5px',
-                  fontSize: '16px'
-                }}
-              />
-            </div>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                Фамилия:
-              </label>
-              <input
-                type="text"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                style={{ 
-                  width: '100%', 
-                  padding: '10px', 
-                  border: '1px solid #ddd',
-                  borderRadius: '5px',
-                  fontSize: '16px'
-                }}
-              />
-            </div>
-          </>
-        )}
         
         <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
           <button 
