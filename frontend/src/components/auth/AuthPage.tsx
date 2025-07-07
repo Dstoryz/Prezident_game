@@ -6,11 +6,7 @@ const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
-    username: '',
-    password: '',
-    password_confirm: '',
-    first_name: '',
-    last_name: ''
+    password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -30,19 +26,15 @@ const AuthPage: React.FC = () => {
     setIsLoading(true);
     setError('');
     setSuccess('');
-
     try {
       let success = false;
-      
       if (isLogin) {
         success = await login(formData.email, formData.password);
       } else {
         success = await register(formData);
       }
-
       if (success) {
         setSuccess(isLogin ? 'Вход выполнен успешно!' : 'Регистрация выполнена успешно!');
-        // Перенаправление произойдет автоматически через AuthContext
       } else {
         setError(isLogin ? 'Ошибка входа. Проверьте email и пароль.' : 'Ошибка регистрации. Проверьте данные.');
       }
@@ -59,11 +51,7 @@ const AuthPage: React.FC = () => {
     setSuccess('');
     setFormData({
       email: '',
-      username: '',
-      password: '',
-      password_confirm: '',
-      first_name: '',
-      last_name: ''
+      password: ''
     });
   };
 
@@ -108,21 +96,6 @@ const AuthPage: React.FC = () => {
               />
             </div>
 
-            {!isLogin && (
-              <div className="form-group">
-                <label htmlFor="username">Имя пользователя</label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Введите имя пользователя"
-                />
-              </div>
-            )}
-
             <div className="form-group">
               <label htmlFor="password">Пароль</label>
               <input
@@ -135,49 +108,6 @@ const AuthPage: React.FC = () => {
                 placeholder="Введите пароль"
               />
             </div>
-
-            {!isLogin && (
-              <>
-                <div className="form-group">
-                  <label htmlFor="password_confirm">Подтвердите пароль</label>
-                  <input
-                    type="password"
-                    id="password_confirm"
-                    name="password_confirm"
-                    value={formData.password_confirm}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Подтвердите пароль"
-                  />
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="first_name">Имя</label>
-                    <input
-                      type="text"
-                      id="first_name"
-                      name="first_name"
-                      value={formData.first_name}
-                      onChange={handleInputChange}
-                      placeholder="Введите имя"
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label htmlFor="last_name">Фамилия</label>
-                    <input
-                      type="text"
-                      id="last_name"
-                      name="last_name"
-                      value={formData.last_name}
-                      onChange={handleInputChange}
-                      placeholder="Введите фамилию"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
 
             <button 
               type="submit" 

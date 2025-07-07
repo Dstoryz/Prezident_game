@@ -221,7 +221,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Allauth configuration
-ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Отключаем верификацию email для демо
 ACCOUNT_LOGIN_METHODS = {'email'}

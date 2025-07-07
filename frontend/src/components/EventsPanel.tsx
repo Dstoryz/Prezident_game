@@ -3,10 +3,12 @@ import { GameEvent } from '../types/game';
 import './EventsPanel.css';
 
 interface EventsPanelProps {
-  events: GameEvent[];
+  events?: GameEvent[];
 }
 
 const EventsPanel: React.FC<EventsPanelProps> = ({ events }) => {
+  const safeEvents = Array.isArray(events) ? events : [];
+
   const getEventIcon = (eventType: string) => {
     switch (eventType) {
       case 'natural_disaster':
@@ -50,13 +52,13 @@ const EventsPanel: React.FC<EventsPanelProps> = ({ events }) => {
     <div className="events-panel">
       <h3>События</h3>
       
-      {events.length === 0 ? (
+      {safeEvents.length === 0 ? (
         <div className="no-events">
           <p>Событий нет</p>
         </div>
       ) : (
         <div className="events-list">
-          {events.map((event, index) => (
+          {safeEvents.map((event, index) => (
             <div key={index} className="event-card">
               <div className="event-header">
                 <span className="event-icon">{getEventIcon(event.event_type)}</span>

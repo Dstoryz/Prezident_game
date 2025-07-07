@@ -40,7 +40,7 @@ const UserProfile: React.FC = () => {
   return (
     <div className="user-profile" ref={dropdownRef}>
       <div className="user-avatar" onClick={toggleDropdown}>
-        <span>{user.first_name?.[0] || user.username[0]}</span>
+        <span>{user.first_name?.[0] || user.username?.[0] || user.email?.[0] || '?'}</span>
       </div>
       
       {isDropdownOpen && (
@@ -49,7 +49,7 @@ const UserProfile: React.FC = () => {
             <div className="user-name">
               {user.first_name && user.last_name 
                 ? `${user.first_name} ${user.last_name}`
-                : user.username
+                : user.username || user.email || 'Пользователь'
               }
             </div>
             <div className="user-email">{user.email}</div>

@@ -28,6 +28,9 @@ from .services.event_generator import EventGenerator
 @permission_classes([IsAuthenticated])
 def start_game(request):
     """Начать новую игру"""
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.warning(f"[start_game] Входные данные: {request.data}")
     try:
         with transaction.atomic():
             # Создаем новую игровую сессию
@@ -43,6 +46,7 @@ def start_game(request):
             
             # Получаем начальные параметры из запроса или используем значения по умолчанию
             initial_params = request.data.get('initial_parameters', {})
+            logger.warning(f"[start_game] initial_parameters: {initial_params}")
             
             # Создаем параметры игры
             parameters = GameParameters.objects.create(
@@ -88,10 +92,12 @@ def start_game(request):
             )
             
             # Создаем бюджетные данные
+            budget_fields = {f.name for f in BudgetData._meta.get_fields()}
+            clean_budget_data = {k: v for k, v in indicators_data['budget_data'].items() if k in budget_fields}
             budget_data = BudgetData.objects.create(
                 game_session=game_session,
                 turn=1,
-                **indicators_data['budget_data']
+                **clean_budget_data
             )
             
             # Создаем демографические данные
@@ -150,6 +156,7 @@ def start_game(request):
             }, status=status.HTTP_201_CREATED)
             
     except Exception as e:
+        logger.error(f"[start_game] Ошибка: {str(e)}", exc_info=True)
         return Response({
             'error': f'Ошибка при создании игры: {str(e)}'
         }, status=status.HTTP_400_BAD_REQUEST)
@@ -234,28 +241,37 @@ def next_turn(request, game_id):
                 import_volume=indicators_data['import_volume']
             )
             
+            # --- Фильтрация полей для BudgetData ---
+            budget_fields = {f.name for f in BudgetData._meta.get_fields()}
+            clean_budget_data = {k: v for k, v in indicators_data['budget_data'].items() if k in budget_fields}
             budget_data = BudgetData.objects.create(
                 game_session=game_session,
                 turn=new_turn,
-                **indicators_data['budget_data']
+                **clean_budget_data
             )
-            
+            # --- Фильтрация полей для DemographicData ---
+            demographic_fields = {f.name for f in DemographicData._meta.get_fields()}
+            clean_demographic_data = {k: v for k, v in indicators_data['demographic_data'].items() if k in demographic_fields}
             demographic_data = DemographicData.objects.create(
                 game_session=game_session,
                 turn=new_turn,
-                **indicators_data['demographic_data']
+                **clean_demographic_data
             )
-            
+            # --- Фильтрация полей для ProductionData ---
+            production_fields = {f.name for f in ProductionData._meta.get_fields()}
+            clean_production_data = {k: v for k, v in indicators_data['production_data'].items() if k in production_fields}
             production_data = ProductionData.objects.create(
                 game_session=game_session,
                 turn=new_turn,
-                **indicators_data['production_data']
+                **clean_production_data
             )
-            
+            # --- Фильтрация полей для SocialData ---
+            social_fields = {f.name for f in SocialData._meta.get_fields()}
+            clean_social_data = {k: v for k, v in indicators_data['social_data'].items() if k in social_fields}
             social_data = SocialData.objects.create(
                 game_session=game_session,
                 turn=new_turn,
-                **indicators_data['social_data']
+                **clean_social_data
             )
             
             # Создаем события

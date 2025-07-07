@@ -20,7 +20,7 @@ class EconomicEngine:
         
         # Базовые значения для новой игры
         self.initial_capital = 1000.0  # Начальный капитал (млн $)
-        self.initial_population = 50.0  # Начальное население (млн человек)
+        self.initial_population = 10.0  # Начальное население (млн человек)
         self.initial_technology = 1.0   # Начальный технологический уровень
         
     def calculate_indicators(self, parameters: Dict[str, float], 
@@ -78,6 +78,12 @@ class EconomicEngine:
         else:
             population = self.initial_population
             healthcare_quality = 50.0
+
+        # Получаем предыдущий запас денег (accumulated_reserves)
+        if previous_budget:
+            accumulated_reserves = previous_budget.get('accumulated_reserves', 500.0)
+        else:
+            accumulated_reserves = 500.0
         
         # Рассчитываем ВВП по модели Солоу
         gdp_absolute = self.solow_model.production_function(capital, labor, technology)
@@ -178,15 +184,26 @@ class EconomicEngine:
             'social_spending': round(spending.get('social', 0), 2),
             'total_spending': round(total_spending, 2),
             'budget_balance': round(budget_balance, 2),
-            'accumulated_reserves': 0.0  # TODO: рассчитать корректно
+            # Новый расчет накоплений:
+            'accumulated_reserves': round(accumulated_reserves + budget_balance, 2),
         }
         
         # --- Новые параметры банковской системы и денежной массы ---
         reserve_ratio = parameters.get('reserve_ratio', 0.1)
         refinance_rate = parameters.get('refinance_rate', 0.05)
         printing_press_active = parameters.get('printing_press_active', False)
-        gold_reserves = previous_indicators.get('gold_reserves', 100.0) if previous_indicators else 100.0
-        money_supply = previous_indicators.get('money_supply', 1000.0) if previous_indicators else 1000.0
+        # --- Получаем предыдущие значения для денежной массы, золота и долга ---
+        if previous_indicators:
+            previous_money_supply = previous_indicators.get('money_supply', 1000.0)
+            previous_gold_reserves = previous_indicators.get('gold_reserves', 100.0)
+            previous_external_debt = previous_indicators.get('external_debt', 0.0)
+        else:
+            previous_money_supply = 1000.0
+            previous_gold_reserves = 100.0
+            previous_external_debt = 0.0
+        gold_reserves = previous_gold_reserves
+        external_debt = previous_external_debt
+        money_supply = previous_money_supply
         # --- Социальные трансферты ---
         social_transfers = parameters.get('social_transfers', 0.0)
 
@@ -214,18 +231,52 @@ class EconomicEngine:
         # --- Социальные трансферты ---
         # Увеличивают расходы бюджета, поддерживают настроение населения
         total_spending += social_transfers
-        public_mood += social_transfers / (gdp_absolute + 1) * 100
+        public_mood += (social_transfers / (gdp_absolute + 1)) * 20  # Меньшее влияние на настроение
         # Влияют на инфляцию при большом объёме
         if social_transfers > gdp_absolute * 0.2:
             inflation += (social_transfers - gdp_absolute * 0.2) / (gdp_absolute + 1) * 10
+
+        # --- Логика денежной массы и инфляции ---
+        # Если денежная масса растёт быстрее ВВП, инфляция увеличивается
+        money_growth = (money_supply - previous_money_supply) / (previous_money_supply + 1)
+        gdp_growth_rate = (new_gdp - gdp_absolute) / (gdp_absolute + 1)
+        inflation += (money_growth - gdp_growth_rate) * 10  # коэффициент можно скорректировать
+
+        # --- Компенсация дефицита бюджета ---
+        deficit = -budget_balance if budget_balance < 0 else 0
+        gold_used = 0.0
+        debt_taken = 0.0
+        if deficit > 0:
+            if gold_reserves >= deficit:
+                gold_used = deficit
+                gold_reserves -= deficit
+            else:
+                gold_used = gold_reserves
+                gold_reserves = 0.0
+                debt_taken = deficit - gold_used
+                external_debt += debt_taken
+        # Погашение долга: 5% от суммы + 2% годовых
+        debt_repayment = external_debt * 0.05
+        debt_interest = external_debt * 0.02
+        external_debt = max(0.0, external_debt - debt_repayment + debt_interest)
 
         # --- Обновляем бюджетные данные ---
         budget_data['social_transfers'] = round(social_transfers, 2)
         budget_data['total_spending'] = round(total_spending, 2)
         budget_data['budget_balance'] = round(revenue['total_revenue'] - total_spending, 2)
+        budget_data['accumulated_reserves'] = round(accumulated_reserves + budget_balance, 2)
+        budget_data['gold_reserves'] = round(gold_reserves, 2)
+        budget_data['external_debt'] = round(external_debt, 2)
+        budget_data['gold_used'] = round(gold_used, 2)
+        budget_data['debt_taken'] = round(debt_taken, 2)
+        budget_data['debt_repayment'] = round(debt_repayment, 2)
+        budget_data['debt_interest'] = round(debt_interest, 2)
 
         # --- Демография: соц. трансферты на душу населения ---
         social_transfers_per_capita = social_transfers / (demographic_data['new_population'] + 1)
+
+        # --- Ограничение настроения населения диапазоном 0-100 ---
+        public_mood = max(0.0, min(100.0, public_mood))
 
         # --- Возвращаем все новые параметры ---
         return {
@@ -244,6 +295,8 @@ class EconomicEngine:
             'reserve_ratio': round(reserve_ratio, 3),
             'refinance_rate': round(refinance_rate, 3),
             'printing_press_active': printing_press_active,
+            'population': round(demographic_data['new_population'], 2),
+            'external_debt': round(external_debt, 2),
             'budget_data': budget_data,
             
             # Демографические данные

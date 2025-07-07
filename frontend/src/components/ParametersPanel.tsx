@@ -13,7 +13,10 @@ const ParametersPanel: React.FC<ParametersPanelProps> = ({
   onNextTurn, 
   loading 
 }) => {
-  const [localParameters, setLocalParameters] = useState<GameParameters>(parameters);
+  const [localParameters, setLocalParameters] = useState<GameParameters>({
+    ...parameters,
+    social_transfers: parameters.social_transfers ?? 0,
+  });
 
   const handleParameterChange = (key: keyof GameParameters, value: number) => {
     setLocalParameters(prev => ({
@@ -31,7 +34,8 @@ const ParametersPanel: React.FC<ParametersPanelProps> = ({
       interest_rate: 5.0,
       tax_rate: 20.0,
       government_spending: 25.0,
-      customs_duty: 5.0
+      customs_duty: 5.0,
+      social_transfers: 0,
     });
   };
 
@@ -101,6 +105,22 @@ const ParametersPanel: React.FC<ParametersPanelProps> = ({
           />
         </label>
         <small>Пошлины влияют на внешнюю торговлю</small>
+      </div>
+
+      <div className="parameter-group">
+        <label>
+          Социальные трансферты: {localParameters.social_transfers} млн $
+          <input
+            type="range"
+            min="0"
+            max="1000"
+            step="10"
+            value={localParameters.social_transfers}
+            onChange={(e) => handleParameterChange('social_transfers', parseFloat(e.target.value))}
+            disabled={loading}
+          />
+        </label>
+        <small>Выплаты населению, поддерживают спрос и настроение, но увеличивают расходы бюджета</small>
       </div>
 
       <div className="parameter-actions">

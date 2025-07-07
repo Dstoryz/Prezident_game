@@ -3,6 +3,7 @@ export interface GameParameters {
   tax_rate: number;
   government_spending: number;
   customs_duty: number;
+  social_transfers: number;
 }
 
 export interface EconomicIndicators {
@@ -14,6 +15,13 @@ export interface EconomicIndicators {
   public_mood: number;
   export_volume: number;
   import_volume: number;
+  // Новые поля:
+  money_supply: number;
+  gold_reserves: number;
+  reserve_ratio: number;
+  refinance_rate: number;
+  printing_press_active: boolean;
+  population: number;
 }
 
 export interface GameEvent {
@@ -26,6 +34,22 @@ export interface GameEvent {
   rating_impact: number;
 }
 
+export interface BudgetData {
+  tax_revenue: number;
+  customs_revenue: number;
+  total_revenue: number;
+  education_spending: number;
+  healthcare_spending: number;
+  defense_spending: number;
+  infrastructure_spending: number;
+  social_spending: number;
+  total_spending: number;
+  budget_balance: number;
+  accumulated_reserves: number;
+  // Новое поле:
+  social_transfers: number;
+}
+
 export interface GameSession {
   id: number;
   current_turn: number;
@@ -36,6 +60,7 @@ export interface GameSession {
   parameters: GameParameters;
   current_indicators: EconomicIndicators | null;
   current_events: GameEvent[];
+  current_budget?: BudgetData | null;
 }
 
 export interface GameState {

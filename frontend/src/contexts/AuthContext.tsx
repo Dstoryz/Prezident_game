@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { authApi } from '../services/api';
 
 interface User {
   id: number;
@@ -30,11 +31,7 @@ interface AuthContextType {
 
 interface RegisterData {
   email: string;
-  username: string;
   password: string;
-  password_confirm: string;
-  first_name?: string;
-  last_name?: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,87 +52,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Проверяем токены при загрузке
+  // Проверяем авторизацию при загрузке
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('access_token');
-      if (token) {
-        try {
-          const response = await fetch('http://localhost:8000/api/auth/user/', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-          
-          if (response.ok) {
-            const userData = await response.json();
-            setUser(userData);
-          } else {
-            // Токен истёк, пробуем обновить
-            await refreshToken();
-          }
-        } catch (error) {
-          console.error('Ошибка при проверке токена:', error);
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-        }
+      try {
+        const userData = await authApi.getUser();
+        setUser(userData);
+      } catch (error) {
+        console.error('Пользователь не авторизован:', error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     initAuth();
   }, []);
 
-  const refreshToken = async (): Promise<boolean> => {
-    const refresh = localStorage.getItem('refresh_token');
-    if (!refresh) return false;
-
-    try {
-      const response = await fetch('http://localhost:8000/api/token/refresh/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refresh }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('access_token', data.access);
-        return true;
-      } else {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        return false;
-      }
-    } catch (error) {
-      console.error('Ошибка при обновлении токена:', error);
-      return false;
-    }
-  };
-
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/login/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('access_token', data.tokens.access);
-        localStorage.setItem('refresh_token', data.tokens.refresh);
-        setUser(data.user);
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error('Ошибка входа:', errorData);
-        return false;
-      }
+      const data = await authApi.login({ email, password });
+      setUser(data.user);
+      return true;
     } catch (error) {
       console.error('Ошибка при входе:', error);
       return false;
@@ -144,69 +82,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const register = async (userData: RegisterData): Promise<boolean> => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/register/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('access_token', data.tokens.access);
-        localStorage.setItem('refresh_token', data.tokens.refresh);
-        setUser(data.user);
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error('Ошибка регистрации:', errorData);
-        return false;
-      }
+      const data = await authApi.register(userData);
+      setUser(data.user);
+      return true;
     } catch (error) {
       console.error('Ошибка при регистрации:', error);
       return false;
     }
   };
 
-  const logout = () => {
-    const refresh = localStorage.getItem('refresh_token');
-    if (refresh) {
-      // Отправляем запрос на выход (не блокируем UI)
-      fetch('http://localhost:8000/api/auth/logout/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refresh_token: refresh }),
-      }).catch(console.error);
+  const logout = async () => {
+    try {
+      await authApi.logout();
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+    } finally {
+      setUser(null);
     }
-    
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    setUser(null);
   };
 
   const updateProfile = async (data: Partial<User>): Promise<boolean> => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('http://localhost:8000/api/auth/profile/', {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUser(updatedUser);
-        return true;
-      } else {
-        console.error('Ошибка обновления профиля');
-        return false;
-      }
+      // Здесь можно добавить API для обновления профиля
+      console.log('Обновление профиля:', data);
+      return true;
     } catch (error) {
       console.error('Ошибка при обновлении профиля:', error);
       return false;

@@ -25,14 +25,14 @@
 }
 
 .user-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
+  position: fixed;
+  top: 70px;
+  right: 40px;
+  z-index: 11000;
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   min-width: 250px;
-  z-index: 9999;
   margin-top: 0.5rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
 }

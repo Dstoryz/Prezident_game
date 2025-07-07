@@ -23,12 +23,21 @@ class GameParametersSerializer(serializers.ModelSerializer):
 
 
 class EconomicIndicatorsSerializer(serializers.ModelSerializer):
+    population = serializers.SerializerMethodField()
+
     class Meta:
         model = EconomicIndicators
-        fields = ['id', 'game_session', 'turn', 'gdp_growth', 'gdp_absolute',
-                 'inflation', 'unemployment', 'investments', 'president_rating',
-                 'public_mood', 'export_volume', 'import_volume', 'created_at',
-                 'money_supply', 'gold_reserves', 'reserve_ratio', 'refinance_rate', 'printing_press_active']
+        fields = [
+            'id', 'game_session', 'turn', 'gdp_growth', 'gdp_absolute',
+            'inflation', 'unemployment', 'investments', 'president_rating',
+            'public_mood', 'export_volume', 'import_volume', 'created_at',
+            'money_supply', 'gold_reserves', 'reserve_ratio', 'refinance_rate',
+            'printing_press_active', 'population'
+        ]
+
+    def get_population(self, obj):
+        demographic = obj.game_session.demographic_data.filter(turn=obj.turn).first()
+        return demographic.population if demographic else 0
 
 
 class BudgetDataSerializer(serializers.ModelSerializer):
@@ -108,28 +117,27 @@ class NextTurnRequestSerializer(serializers.Serializer):
     tax_rate = serializers.FloatField(min_value=0.0, max_value=50.0)
     government_spending = serializers.FloatField(min_value=10.0, max_value=50.0)
     customs_duty = serializers.FloatField(min_value=0.0, max_value=30.0)
-    education_priority = serializers.FloatField(min_value=0.0, max_value=40.0)
-    healthcare_priority = serializers.FloatField(min_value=0.0, max_value=40.0)
-    defense_priority = serializers.FloatField(min_value=0.0, max_value=40.0)
-    infrastructure_priority = serializers.FloatField(min_value=0.0, max_value=40.0)
-    social_priority = serializers.FloatField(min_value=0.0, max_value=40.0)
-    
+    education_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
+    healthcare_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
+    defense_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
+    infrastructure_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
+    social_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
+    social_transfers = serializers.FloatField(min_value=0.0, max_value=10000.0, required=False, default=0.0)
+
     def validate(self, data):
         """Валидация бюджетных приоритетов"""
         priorities = [
-            data['education_priority'],
-            data['healthcare_priority'],
-            data['defense_priority'],
-            data['infrastructure_priority'],
-            data['social_priority']
+            data.get('education_priority', 20.0),
+            data.get('healthcare_priority', 20.0),
+            data.get('defense_priority', 20.0),
+            data.get('infrastructure_priority', 20.0),
+            data.get('social_priority', 20.0)
         ]
-        
         total_priority = sum(priorities)
         if total_priority > 100.0:
             raise serializers.ValidationError(
                 f"Сумма бюджетных приоритетов не может превышать 100%. Текущая сумма: {total_priority}%"
             )
-        
         return data
 
 
