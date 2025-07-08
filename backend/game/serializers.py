@@ -32,10 +32,16 @@ class EconomicIndicatorsSerializer(serializers.ModelSerializer):
             'inflation', 'unemployment', 'investments', 'president_rating',
             'public_mood', 'export_volume', 'import_volume', 'created_at',
             'money_supply', 'gold_reserves', 'reserve_ratio', 'refinance_rate',
-            'printing_press_active', 'population'
+            'printing_press_active', 'population',
+            # Новые поля для расширенной модели
+            'industry_output', 'services_output', 'exchange_rate', 'external_debt',
+            'interest_rate'
         ]
 
     def get_population(self, obj):
+        # Используем поле из модели, если оно есть, иначе из демографических данных
+        if hasattr(obj, 'population') and obj.population:
+            return obj.population
         demographic = obj.game_session.demographic_data.filter(turn=obj.turn).first()
         return demographic.population if demographic else 0
 
@@ -47,7 +53,9 @@ class BudgetDataSerializer(serializers.ModelSerializer):
                  'total_revenue', 'education_spending', 'healthcare_spending',
                  'defense_spending', 'infrastructure_spending', 'social_spending',
                  'total_spending', 'budget_balance', 'accumulated_reserves', 'created_at',
-                 'social_transfers']
+                 'social_transfers',
+                 # Новые поля для расширенной модели
+                 'gold_reserves', 'external_debt']
 
 
 class DemographicDataSerializer(serializers.ModelSerializer):

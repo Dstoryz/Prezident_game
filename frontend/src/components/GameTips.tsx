@@ -1,245 +1,159 @@
 import React, { useState } from 'react';
-import { GameEvent, EconomicIndicators } from '../types/game';
 import './GameTips.css';
 
 interface GameTipsProps {
-  currentEvent?: GameEvent;
-  indicators?: EconomicIndicators;
-  parameters: {
-    interest_rate: number;
-    tax_rate: number;
-    government_spending: number;
-    customs_duty: number;
-  };
+  modelType?: 'basic' | 'enhanced';
 }
 
-const GameTips: React.FC<GameTipsProps> = ({ currentEvent, indicators, parameters }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const GameTips: React.FC<GameTipsProps> = ({ modelType = 'basic' }) => {
+  const [activeCategory, setActiveCategory] = useState<string>('general');
 
-  const getEventExplanation = (event: GameEvent) => {
-    const explanations: { [key: string]: string } = {
-      'economic_crisis': 'Экономический кризис снижает доверие инвесторов и потребителей. Необходимо принимать меры для стабилизации экономики.',
-      'oil_price_shock': 'Резкое изменение цен на нефть влияет на экспорт и инфляцию. Нужно адаптировать экономическую политику.',
-      'natural_disaster': 'Природная катастрофа требует дополнительных расходов на восстановление и может временно снизить экономическую активность.',
-      'political_scandal': 'Политический скандал снижает рейтинг президента и доверие к правительству.',
-      'trade_war': 'Торговая война влияет на экспорт/импорт и может потребовать изменения таможенной политики.',
-      'inflation_spike': 'Рост инфляции снижает покупательную способность населения и требует монетарных мер.',
-      'recession': 'Рецессия характеризуется снижением экономической активности и требует стимулирующих мер.',
-      'boom': 'Экономический бум может привести к перегреву экономики и требует сдерживающих мер.',
-      'election_year': 'Год выборов требует особого внимания к социальным программам и рейтингу.',
-      'corruption_case': 'Дело о коррупции подрывает доверие к власти и требует прозрачности.',
-    };
-
-    return explanations[event.event_type] || 'Это событие влияет на экономическую ситуацию в стране.';
+  const basicTips = {
+    general: [
+      'Балансируйте налоги и расходы для стабильного роста ВВП',
+      'Следите за инфляцией - слишком высокая инфляция снижает рейтинг',
+      'Инвестируйте в образование и здравоохранение для долгосрочного роста',
+      'Поддерживайте низкую безработицу для высокого рейтинга президента'
+    ],
+    economy: [
+      'Рост ВВП зависит от инвестиций и производительности',
+      'Инфляция растет при избытке денежной массы',
+      'Безработица снижается при экономическом росте',
+      'Экспорт и импорт влияют на торговый баланс'
+    ],
+    budget: [
+      'Налоговые поступления зависят от ставки и ВВП',
+      'Таможенные пошлины приносят доход от внешней торговли',
+      'Социальные расходы повышают рейтинг президента',
+      'Накопления помогают пережить кризисы'
+    ]
   };
 
-  const getEconomicAnalysis = () => {
-    if (!indicators) return null;
-
-    const analysis = [];
-
-    // Анализ ВВП
-    if (indicators.gdp_growth > 3) {
-      analysis.push('✅ Экономика растет высокими темпами');
-    } else if (indicators.gdp_growth > 0) {
-      analysis.push('📈 Экономика растет умеренно');
-    } else {
-      analysis.push('⚠️ Экономика в рецессии');
-    }
-
-    // Анализ инфляции
-    if (indicators.inflation > 8) {
-      analysis.push('🔥 Высокая инфляция требует срочных мер');
-    } else if (indicators.inflation > 4) {
-      analysis.push('📊 Умеренная инфляция в пределах нормы');
-    } else {
-      analysis.push('❄️ Низкая инфляция, возможен риск дефляции');
-    }
-
-    // Анализ безработицы
-    if (indicators.unemployment > 8) {
-      analysis.push('👥 Высокая безработица требует стимулирования занятости');
-    } else if (indicators.unemployment > 5) {
-      analysis.push('📋 Безработица на умеренном уровне');
-    } else {
-      analysis.push('🎯 Низкая безработица - хороший показатель');
-    }
-
-    // Анализ рейтинга
-    if (indicators.president_rating > 70) {
-      analysis.push('👑 Высокий рейтинг президента');
-    } else if (indicators.president_rating > 50) {
-      analysis.push('📊 Средний рейтинг президента');
-    } else {
-      analysis.push('⚠️ Низкий рейтинг президента требует действий');
-    }
-
-    return analysis;
+  const enhancedTips = {
+    general: [
+      'Расширенная модель включает двухсекторную экономику (промышленность + услуги)',
+      'Валютный курс влияет на экспорт/импорт и инфляцию',
+      'Кризисы могут возникать случайно и требуют быстрой реакции',
+      'Демографические изменения влияют на экономический рост'
+    ],
+    economy: [
+      'Промышленность более чувствительна к инвестициям',
+      'Сектор услуг растет при развитии экономики',
+      'Обменный курс зависит от торгового баланса и ставок',
+      'Внешний долг может стать проблемой при высоких ставках',
+      'Закон Оукена: рост ВВП снижает безработицу',
+      'Кривая Филлипса: безработица и инфляция связаны'
+    ],
+    monetary: [
+      'Ключевая ставка влияет на кредитование и инфляцию',
+      'Печатный станок может вызвать гиперинфляцию',
+      'Золотой запас поддерживает стабильность валюты',
+      'Денежная масса должна соответствовать росту экономики',
+      'Правило Тейлора: ставка = инфляция + 2% + 0.5*(инфляция - 2%) + 0.5*разрыв ВВП'
+    ],
+    trade: [
+      'Экспорт растет при девальвации валюты',
+      'Импорт дорожает при девальвации',
+      'Таможенные пошлины защищают местных производителей',
+      'Внешнеторговый баланс влияет на валютный курс',
+      'Глобальные кризисы могут снизить экспорт'
+    ],
+    crises: [
+      'Финансовые кризисы снижают доверие и инвестиции',
+      'Валютные кризисы вызывают девальвацию',
+      'Экономические кризисы снижают ВВП и рост',
+      'Демографические кризисы влияют на трудовые ресурсы',
+      'Быстрая реакция на кризисы минимизирует ущерб'
+    ],
+    social: [
+      'Социальные трансферты поддерживают потребление',
+      'Образование повышает производительность труда',
+      'Здравоохранение влияет на демографию',
+      'Социальная стабильность важна для экономики',
+      'Демографические изменения требуют адаптации политики'
+    ]
   };
 
-  const getRecommendations = () => {
-    if (!indicators) return [];
+  const tips = modelType === 'enhanced' ? enhancedTips : basicTips;
 
-    const recommendations = [];
-
-    // Рекомендации по процентной ставке
-    if (indicators.inflation > 6) {
-      recommendations.push('💡 Рекомендуется повысить процентную ставку для борьбы с инфляцией');
-    } else if (indicators.gdp_growth < 0) {
-      recommendations.push('💡 Рекомендуется снизить процентную ставку для стимулирования экономики');
-    }
-
-    // Рекомендации по налогам
-    if (indicators.unemployment > 7) {
-      recommendations.push('💡 Снижение налогов может стимулировать занятость');
-    } else if (parameters.government_spending > 30) {
-      recommendations.push('💡 Повышение налогов может снизить дефицит бюджета');
-    }
-
-    // Рекомендации по госрасходам
-    if (indicators.gdp_growth < 1) {
-      recommendations.push('💡 Увеличение госрасходов может стимулировать экономический рост');
-    } else if (indicators.inflation > 5) {
-      recommendations.push('💡 Снижение госрасходов может помочь контролировать инфляцию');
-    }
-
-    // Рекомендации по таможенным пошлинам
-    if (indicators.import_volume > indicators.export_volume * 1.5) {
-      recommendations.push('💡 Повышение таможенных пошлин может улучшить торговый баланс');
-    } else if (indicators.export_volume < indicators.import_volume * 0.7) {
-      recommendations.push('💡 Снижение таможенных пошлин может стимулировать экспорт');
-    }
-
-    return recommendations;
-  };
-
-  const getParameterTips = () => {
-    return [
-      {
-        name: 'Процентная ставка',
-        current: parameters.interest_rate,
-        description: 'Влияет на кредитование и инфляцию. Высокая ставка сдерживает инфляцию, но замедляет рост.',
-        range: '2-15%'
-      },
-      {
-        name: 'Налоговая ставка',
-        current: parameters.tax_rate,
-        description: 'Влияет на доходы бюджета и экономическую активность. Высокие налоги снижают стимулы к работе.',
-        range: '10-50%'
-      },
-      {
-        name: 'Госрасходы',
-        current: parameters.government_spending,
-        description: 'Влияет на экономический рост и дефицит бюджета. Высокие расходы стимулируют экономику.',
-        range: '15-40%'
-      },
-      {
-        name: 'Таможенные пошлины',
-        current: parameters.customs_duty,
-        description: 'Влияет на торговый баланс и цены на импорт. Высокие пошлины защищают местных производителей.',
-        range: '0-25%'
-      }
-    ];
-  };
+  const categories = modelType === 'enhanced' 
+    ? [
+        { id: 'general', name: 'Общие принципы', icon: '🎯' },
+        { id: 'economy', name: 'Экономика', icon: '📊' },
+        { id: 'monetary', name: 'Денежная политика', icon: '💰' },
+        { id: 'trade', name: 'Внешняя торговля', icon: '🌍' },
+        { id: 'crises', name: 'Кризисы', icon: '🚨' },
+        { id: 'social', name: 'Социальная сфера', icon: '👥' }
+      ]
+    : [
+        { id: 'general', name: 'Общие принципы', icon: '🎯' },
+        { id: 'economy', name: 'Экономика', icon: '📊' },
+        { id: 'budget', name: 'Бюджет', icon: '💰' }
+      ];
 
   return (
     <div className="game-tips">
-      <div className="tips-header" onClick={() => setIsExpanded(!isExpanded)}>
-        <h3>💡 Подсказки и рекомендации</h3>
-        <span className="expand-icon">{isExpanded ? '▼' : '▶'}</span>
+      <div className="tips-header">
+        <h2>💡 Советы по игре</h2>
+        <div className="model-badge">
+          {modelType === 'enhanced' ? 'Расширенная модель' : 'Базовая модель'}
+        </div>
       </div>
 
-      {isExpanded && (
-        <div className="tips-content">
-          {/* Текущее событие */}
-          {currentEvent && (
-            <div className="tip-section">
-              <h4>🎯 Текущее событие: {currentEvent.title}</h4>
-              <p className="event-description">{currentEvent.description}</p>
-              <div className="event-explanation">
-                <strong>Объяснение:</strong> {getEventExplanation(currentEvent)}
-              </div>
-              <div className="event-impacts">
-                <strong>Воздействие:</strong>
-                <ul>
-                  {currentEvent.gdp_impact !== 0 && (
-                    <li>ВВП: {currentEvent.gdp_impact > 0 ? '+' : ''}{currentEvent.gdp_impact}%</li>
-                  )}
-                  {currentEvent.inflation_impact !== 0 && (
-                    <li>Инфляция: {currentEvent.inflation_impact > 0 ? '+' : ''}{currentEvent.inflation_impact}%</li>
-                  )}
-                  {currentEvent.unemployment_impact !== 0 && (
-                    <li>Безработица: {currentEvent.unemployment_impact > 0 ? '+' : ''}{currentEvent.unemployment_impact}%</li>
-                  )}
-                  {currentEvent.rating_impact !== 0 && (
-                    <li>Рейтинг: {currentEvent.rating_impact > 0 ? '+' : ''}{currentEvent.rating_impact}%</li>
-                  )}
-                </ul>
-              </div>
-            </div>
-          )}
+      <div className="tips-categories">
+        {categories.map(category => (
+          <button
+            key={category.id}
+            className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
+            onClick={() => setActiveCategory(category.id)}
+          >
+            <span className="category-icon">{category.icon}</span>
+            <span className="category-name">{category.name}</span>
+          </button>
+        ))}
+      </div>
 
-          {/* Анализ экономики */}
-          {indicators && (
-            <div className="tip-section">
-              <h4>📊 Анализ экономической ситуации</h4>
-              <div className="economic-analysis">
-                {getEconomicAnalysis()?.map((item, index) => (
-                  <div key={index} className="analysis-item">{item}</div>
-                ))}
-              </div>
+      <div className="tips-content">
+        <div className="tips-list">
+          {tips[activeCategory as keyof typeof tips]?.map((tip, index) => (
+            <div key={index} className="tip-item">
+              <div className="tip-number">{index + 1}</div>
+              <div className="tip-text">{tip}</div>
             </div>
-          )}
-
-          {/* Рекомендации */}
-          {indicators && (
-            <div className="tip-section">
-              <h4>🎯 Рекомендации по управлению</h4>
-              <div className="recommendations">
-                {getRecommendations().map((rec, index) => (
-                  <div key={index} className="recommendation-item">{rec}</div>
-                ))}
-                {getRecommendations().length === 0 && (
-                  <div className="no-recommendations">
-                    Экономическая ситуация стабильна. Продолжайте текущую политику.
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Подсказки по параметрам */}
-          <div className="tip-section">
-            <h4>⚙️ Подсказки по параметрам управления</h4>
-            <div className="parameter-tips">
-              {getParameterTips().map((tip, index) => (
-                <div key={index} className="parameter-tip">
-                  <div className="parameter-header">
-                    <span className="parameter-name">{tip.name}</span>
-                    <span className="parameter-current">{tip.current}%</span>
-                  </div>
-                  <p className="parameter-description">{tip.description}</p>
-                  <div className="parameter-range">Диапазон: {tip.range}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Общие советы */}
-          <div className="tip-section">
-            <h4>💭 Общие советы</h4>
-            <div className="general-tips">
-              <ul>
-                <li>Балансируйте между экономическим ростом и стабильностью</li>
-                <li>Следите за рейтингом президента - он влияет на исход выборов</li>
-                <li>Адаптируйте политику к текущим событиям</li>
-                <li>Не делайте резких изменений - экономика реагирует постепенно</li>
-                <li>Учитывайте взаимосвязь между параметрами</li>
-              </ul>
-            </div>
-          </div>
+          ))}
         </div>
-      )}
+
+        {modelType === 'enhanced' && (
+          <div className="enhanced-features">
+            <h3>🎮 Особенности расширенной модели</h3>
+            <div className="features-grid">
+              <div className="feature">
+                <h4>🏭 Двухсекторная экономика</h4>
+                <p>Промышленность и услуги развиваются по-разному</p>
+              </div>
+              <div className="feature">
+                <h4>💱 Валютный курс</h4>
+                <p>Динамический обменный курс влияет на торговлю</p>
+              </div>
+              <div className="feature">
+                <h4>🚨 Система кризисов</h4>
+                <p>Случайные события требуют быстрой реакции</p>
+              </div>
+              <div className="feature">
+                <h4>👥 Демография</h4>
+                <p>Население изменяется и влияет на экономику</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="tips-footer">
+        <p>
+          <strong>Совет:</strong> Начните с консервативной политики и постепенно 
+          экспериментируйте с параметрами для понимания их влияния.
+        </p>
+      </div>
     </div>
   );
 };

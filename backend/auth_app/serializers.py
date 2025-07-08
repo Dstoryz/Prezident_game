@@ -2,25 +2,20 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from .models import User, UserProfile
+from dj_rest_auth.registration.serializers import RegisterSerializer
 
 
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class UserRegistrationSerializer(RegisterSerializer):
     """
-    Сериализатор для регистрации пользователя (только email и пароль)
+    Кастомный сериализатор регистрации для dj-rest-auth с созданием профиля пользователя
     """
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ['email', 'password']
-
-    def create(self, validated_data):
-        user = User.objects.create_user(email=validated_data['email'], password=validated_data['password'])
+    username = serializers.CharField(required=False, allow_blank=True)
+    
+    def save(self, request):
+        user = super().save(request)
+        from .models import UserProfile
         UserProfile.objects.create(user=user)
         return user
-
-    def save(self, request=None):
-        return self.create(self.validated_data)
 
 
 class UserLoginSerializer(serializers.Serializer):

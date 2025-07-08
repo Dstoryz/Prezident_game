@@ -1,0 +1,291 @@
+.enhanced-game-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #333;
+}
+
+/* Загрузка и ошибки */
+.enhanced-game-page.loading,
+.enhanced-game-page.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: white;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-content {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  max-width: 500px;
+}
+
+.error-content h2 {
+  color: #e74c3c;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.error-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.error-actions button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.error-actions button:first-child {
+  background: #95a5a6;
+  color: white;
+}
+
+.error-actions button:last-child {
+  background: #3498db;
+  color: white;
+}
+
+.error-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Заголовок игры */
+.game-header {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.game-info h1 {
+  margin: 0 0 10px 0;
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.game-meta {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.game-meta span {
+  background: #ecf0f1;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #7f8c8d;
+}
+
+.game-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.action-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-btn.secondary {
+  background: #95a5a6;
+  color: white;
+}
+
+.action-btn.primary {
+  background: #3498db;
+  color: white;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Панель вкладок */
+.game-tabs {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0 30px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 5px;
+}
+
+.tab-btn {
+  padding: 15px 25px;
+  border: none;
+  background: transparent;
+  color: #7f8c8d;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-bottom: 3px solid transparent;
+  position: relative;
+}
+
+.tab-btn:hover {
+  color: #3498db;
+  background: rgba(52, 152, 219, 0.1);
+}
+
+.tab-btn.active {
+  color: #3498db;
+  border-bottom-color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
+}
+
+/* Основной контент */
+.game-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chart-container,
+.tips-container {
+  background: rgba(255, 255, 255, 0.95);
+  margin: 20px;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  min-height: 500px;
+}
+
+/* Информационная панель */
+.game-footer {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px 30px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-info p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.footer-info strong {
+  color: #2c3e50;
+}
+
+.footer-help p {
+  margin: 0;
+  color: #3498db;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .game-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px 20px;
+  }
+  
+  .game-info h1 {
+    font-size: 24px;
+  }
+  
+  .game-meta {
+    justify-content: center;
+  }
+  
+  .game-tabs {
+    padding: 0 15px;
+    overflow-x: auto;
+  }
+  
+  .tab-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  
+  .chart-container,
+  .tips-container {
+    margin: 10px;
+    padding: 15px;
+  }
+  
+  .game-footer {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-info h1 {
+    font-size: 20px;
+  }
+  
+  .game-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .game-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .action-btn {
+    width: 100%;
+  }
+  
+  .tab-btn {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+} 

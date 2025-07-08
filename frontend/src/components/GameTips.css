@@ -1,226 +1,258 @@
 .game-tips {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.tips-header {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 15px 20px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.3s ease;
-}
-
-.tips-header:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.tips-header h3 {
-  margin: 0;
-  color: white;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.expand-icon {
-  color: white;
-  font-size: 1.2rem;
-  transition: transform 0.3s ease;
-}
-
-.tips-content {
-  padding: 20px;
-  max-height: 600px;
+  height: 100%;
   overflow-y: auto;
 }
 
-.tip-section {
-  margin-bottom: 25px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.tip-section:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.tip-section h4 {
-  color: white;
-  margin: 0 0 15px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.event-description {
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 15px;
-  line-height: 1.5;
-}
-
-.event-explanation {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.4;
-}
-
-.event-impacts {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 12px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.event-impacts ul {
-  margin: 10px 0 0 0;
-  padding-left: 20px;
-}
-
-.event-impacts li {
-  margin-bottom: 5px;
-}
-
-.economic-analysis {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.analysis-item {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-}
-
-.recommendations {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.recommendation-item {
-  background: rgba(76, 175, 80, 0.2);
-  border: 1px solid rgba(76, 175, 80, 0.3);
-  padding: 12px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-  line-height: 1.4;
-}
-
-.no-recommendations {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 12px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.8);
-  font-style: italic;
-  text-align: center;
-}
-
-.parameter-tips {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
-}
-
-.parameter-tip {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.parameter-header {
+.tips-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #3498db;
 }
 
-.parameter-name {
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.parameter-current {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.parameter-description {
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 8px;
-  line-height: 1.4;
-  font-size: 0.9rem;
-}
-
-.parameter-range {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.85rem;
-  font-style: italic;
-}
-
-.general-tips ul {
+.tips-header h2 {
   margin: 0;
-  padding-left: 20px;
-  color: rgba(255, 255, 255, 0.9);
+  color: #2c3e50;
+  font-size: 24px;
+  font-weight: 700;
 }
 
-.general-tips li {
-  margin-bottom: 8px;
+.model-badge {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Категории */
+.tips-categories {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.category-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 2px solid #e9ecef;
+  background: white;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.category-btn:hover {
+  border-color: #3498db;
+  color: #3498db;
+  transform: translateY(-2px);
+}
+
+.category-btn.active {
+  background: #3498db;
+  border-color: #3498db;
+  color: white;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.category-icon {
+  font-size: 16px;
+}
+
+.category-name {
+  white-space: nowrap;
+}
+
+/* Список советов */
+.tips-list {
+  margin-bottom: 30px;
+}
+
+.tip-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border-left: 4px solid #3498db;
+  transition: all 0.3s;
+}
+
+.tip-item:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.tip-number {
+  background: #3498db;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  color: #2c3e50;
+  font-size: 15px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Особенности расширенной модели */
+.enhanced-features {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 25px;
+  color: white;
+}
+
+.enhanced-features h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.feature {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+}
+
+.feature h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.feature p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
   line-height: 1.4;
 }
 
-/* Скроллбар для tips-content */
-.tips-content::-webkit-scrollbar {
-  width: 6px;
+/* Подвал */
+.tips-footer {
+  background: #ecf0f1;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
 }
 
-.tips-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+.tips-footer p {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 15px;
+  line-height: 1.5;
 }
 
-.tips-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-}
-
-.tips-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+.tips-footer strong {
+  color: #3498db;
 }
 
 /* Адаптивность */
 @media (max-width: 768px) {
-  .tips-content {
-    padding: 15px;
-  }
-  
-  .parameter-tips {
-    grid-template-columns: 1fr;
+  .game-tips {
+    padding: 20px;
   }
   
   .tips-header {
-    padding: 12px 15px;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
   }
   
-  .tips-header h3 {
-    font-size: 1.1rem;
+  .tips-header h2 {
+    font-size: 20px;
+  }
+  
+  .tips-categories {
+    justify-content: center;
+  }
+  
+  .category-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tip-item {
+    padding: 12px;
+  }
+  
+  .tip-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-tips {
+    padding: 15px;
+  }
+  
+  .tips-header h2 {
+    font-size: 18px;
+  }
+  
+  .category-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .category-icon {
+    font-size: 14px;
+  }
+  
+  .tip-number {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+  
+  .enhanced-features {
+    padding: 20px;
+  }
+  
+  .enhanced-features h3 {
+    font-size: 18px;
   }
 } 

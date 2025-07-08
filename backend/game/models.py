@@ -66,6 +66,14 @@ class EconomicIndicators(models.Model):
     reserve_ratio = models.FloatField(default=0.1)     # Резервные требования (доля)
     refinance_rate = models.FloatField(default=0.05)   # Ставка рефинансирования
     printing_press_active = models.BooleanField(default=False)  # Печатный станок
+    
+    # Новые поля для расширенной модели
+    industry_output = models.FloatField(default=600.0)  # ВВП промышленности (млн $)
+    services_output = models.FloatField(default=400.0)  # ВВП услуг (млн $)
+    exchange_rate = models.FloatField(default=1.0)      # Обменный курс
+    external_debt = models.FloatField(default=0.0)      # Внешний долг (млн $)
+    population = models.FloatField(default=10.0)        # Население (млн человек)
+    interest_rate = models.FloatField(default=5.0)      # Ключевая ставка (%)
 
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -100,6 +108,10 @@ class BudgetData(models.Model):
     # Бюджетный баланс
     budget_balance = models.FloatField()         # Дефицит/профицит (млн $)
     accumulated_reserves = models.FloatField()   # Накопления на конец периода (млн $)
+    
+    # Новые поля для расширенной модели
+    gold_reserves = models.FloatField(default=100.0)   # Золотой запас (млн $)
+    external_debt = models.FloatField(default=0.0)     # Внешний долг (млн $)
     
     created_at = models.DateTimeField(auto_now_add=True)
     
