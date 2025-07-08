@@ -724,7 +724,7 @@ def start_enhanced_game(request):
             # Создаем новую игровую сессию с расширенной моделью
             game_session = GameSession.objects.create(
                 user=request.user,
-                turn=1,
+                current_turn=1,
                 model_type='enhanced',
                 is_active=True
             )
@@ -792,7 +792,7 @@ def start_enhanced_game(request):
             # Формируем ответ
             game_data = {
                 'id': game_session.id,
-                'turn': game_session.turn,
+                'turn': game_session.current_turn,
                 'model_type': game_session.model_type,
                 'is_active': game_session.is_active,
                 'indicators': {
@@ -866,52 +866,63 @@ def next_enhanced_turn(request, game_id):
             # Рассчитываем новые показатели
             indicators_data = enhanced_model.calculate_indicators(economic_params)
             
-            # Обновляем экономические показатели
-            indicators = game_session.indicators
-            indicators.turn = game_session.turn + 1
-            indicators.gdp_absolute = indicators_data['gdp_absolute']
-            indicators.gdp_growth = indicators_data['gdp_growth']
-            indicators.inflation = indicators_data['inflation']
-            indicators.unemployment = indicators_data['unemployment']
-            indicators.president_rating = indicators_data['president_rating']
-            indicators.money_supply = indicators_data['money_supply']
-            indicators.gold_reserves = indicators_data['gold_reserves']
-            indicators.industry_output = indicators_data['industry_output']
-            indicators.services_output = indicators_data['services_output']
-            indicators.exchange_rate = indicators_data['exchange_rate']
-            indicators.external_debt = indicators_data['external_debt']
-            indicators.population = indicators_data['population']
-            indicators.interest_rate = indicators_data['interest_rate']
-            indicators.save()
+            # Создаем новые экономические показатели
+            indicators = EconomicIndicators.objects.create(
+                game_session=game_session,
+                turn=game_session.current_turn + 1,
+                gdp_absolute=indicators_data['gdp_absolute'],
+                gdp_growth=indicators_data['gdp_growth'],
+                inflation=indicators_data['inflation'],
+                unemployment=indicators_data['unemployment'],
+                president_rating=indicators_data['president_rating'],
+                money_supply=indicators_data['money_supply'],
+                gold_reserves=indicators_data['gold_reserves'],
+                investments=indicators_data.get('investments', 0),
+                industry_output=indicators_data['industry_output'],
+                services_output=indicators_data['services_output'],
+                exchange_rate=indicators_data['exchange_rate'],
+                external_debt=indicators_data['external_debt'],
+                population=indicators_data['population'],
+                interest_rate=indicators_data['interest_rate']
+            )
             
-            # Обновляем бюджетные данные
-            budget = game_session.budget
-            budget.turn = game_session.turn + 1
-            budget.total_revenue = indicators_data['budget']['total_revenue']
-            budget.total_spending = indicators_data['budget']['total_spending']
-            budget.budget_balance = indicators_data['budget']['budget_balance']
-            budget.accumulated_reserves = indicators_data['budget']['accumulated_reserves']
-            budget.social_transfers = indicators_data['budget']['social_transfers']
-            budget.external_debt = indicators_data['budget']['external_debt']
-            budget.save()
+            # Создаем новые бюджетные данные
+            budget = BudgetData.objects.create(
+                game_session=game_session,
+                turn=game_session.current_turn + 1,
+                tax_revenue=indicators_data['budget'].get('tax_revenue', 0),
+                customs_revenue=indicators_data['budget'].get('customs_revenue', 0),
+                total_revenue=indicators_data['budget']['total_revenue'],
+                education_spending=indicators_data['budget'].get('education_spending', 0),
+                healthcare_spending=indicators_data['budget'].get('healthcare_spending', 0),
+                defense_spending=indicators_data['budget'].get('defense_spending', 0),
+                infrastructure_spending=indicators_data['budget'].get('infrastructure_spending', 0),
+                social_spending=indicators_data['budget'].get('social_spending', 0),
+                total_spending=indicators_data['budget']['total_spending'],
+                budget_balance=indicators_data['budget']['budget_balance'],
+                accumulated_reserves=indicators_data['budget']['accumulated_reserves'],
+                social_transfers=indicators_data['budget']['social_transfers'],
+                external_debt=indicators_data['budget']['external_debt']
+            )
             
             # Обновляем игровую сессию
-            game_session.turn += 1
+            game_session.current_turn += 1
             game_session.save()
             
             # Проверяем кризис
             crisis = None
-            if indicators_data.get('crisis'):
+            crisis_data = indicators_data.get('crisis')
+            if crisis_data and isinstance(crisis_data, dict) and 'type' in crisis_data:
                 crisis = {
-                    'type': indicators_data['crisis']['type'],
-                    'description': indicators_data['crisis']['description'],
-                    'effects': indicators_data['crisis']['effects']
+                    'type': crisis_data.get('type', ''),
+                    'description': crisis_data.get('description', ''),
+                    'effects': crisis_data.get('effects', {})
                 }
             
             # Формируем ответ
             game_data = {
                 'id': game_session.id,
-                'turn': game_session.turn,
+                'turn': game_session.current_turn,
                 'model_type': game_session.model_type,
                 'is_active': game_session.is_active,
                 'indicators': {
@@ -961,12 +972,17 @@ def get_enhanced_game_state(request, game_id):
     try:
         game_session = get_object_or_404(GameSession, id=game_id, user=request.user)
         
-        indicators = game_session.indicators
-        budget = game_session.budget
+        indicators = game_session.indicators.order_by('-turn').first()
+        budget = game_session.budget_data.order_by('-turn').first()
+        
+        if not indicators or not budget:
+            return Response({
+                'error': 'Данные игры не найдены'
+            }, status=status.HTTP_404_NOT_FOUND)
         
         game_data = {
             'id': game_session.id,
-            'turn': game_session.turn,
+            'turn': game_session.current_turn,
             'model_type': game_session.model_type,
             'is_active': game_session.is_active,
             'indicators': {
@@ -1015,31 +1031,40 @@ def get_enhanced_game_history(request, game_id):
         # Получаем историю из базы данных
         history_entries = []
         
+        # Получаем текущие данные
+        current_indicators = game.indicators.order_by('-turn').first()
+        current_budget = game.budget_data.order_by('-turn').first()
+        
+        if not current_indicators or not current_budget:
+            return Response({
+                'error': 'Данные игры не найдены'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
         # Получаем текущее состояние
         current_state = {
-            'turn': game.turn,
+            'turn': game.current_turn,
             'indicators': {
-                'gdp_absolute': game.indicators.gdp_absolute,
-                'gdp_growth': game.indicators.gdp_growth,
-                'inflation': game.indicators.inflation,
-                'unemployment': game.indicators.unemployment,
-                'president_rating': game.indicators.president_rating,
-                'money_supply': game.indicators.money_supply,
-                'gold_reserves': game.indicators.gold_reserves,
-                'industry_output': getattr(game.indicators, 'industry_output', 0),
-                'services_output': getattr(game.indicators, 'services_output', 0),
-                'exchange_rate': getattr(game.indicators, 'exchange_rate', 1.0),
-                'external_debt': getattr(game.indicators, 'external_debt', 0),
-                'population': getattr(game.indicators, 'population', 100),
-                'interest_rate': getattr(game.indicators, 'interest_rate', 5.0),
+                'gdp_absolute': current_indicators.gdp_absolute,
+                'gdp_growth': current_indicators.gdp_growth,
+                'inflation': current_indicators.inflation,
+                'unemployment': current_indicators.unemployment,
+                'president_rating': current_indicators.president_rating,
+                'money_supply': current_indicators.money_supply,
+                'gold_reserves': current_indicators.gold_reserves,
+                'industry_output': getattr(current_indicators, 'industry_output', 0),
+                'services_output': getattr(current_indicators, 'services_output', 0),
+                'exchange_rate': getattr(current_indicators, 'exchange_rate', 1.0),
+                'external_debt': getattr(current_indicators, 'external_debt', 0),
+                'population': getattr(current_indicators, 'population', 100),
+                'interest_rate': getattr(current_indicators, 'interest_rate', 5.0),
             },
             'budget': {
-                'total_revenue': game.budget.total_revenue,
-                'total_spending': game.budget.total_spending,
-                'budget_balance': game.budget.budget_balance,
-                'accumulated_reserves': game.budget.accumulated_reserves,
-                'social_transfers': getattr(game.budget, 'social_transfers', 0),
-                'external_debt': getattr(game.budget, 'external_debt', 0),
+                'total_revenue': current_budget.total_revenue,
+                'total_spending': current_budget.total_spending,
+                'budget_balance': current_budget.budget_balance,
+                'accumulated_reserves': current_budget.accumulated_reserves,
+                'social_transfers': getattr(current_budget, 'social_transfers', 0),
+                'external_debt': getattr(current_budget, 'external_debt', 0),
             },
             'timestamp': game.updated_at.isoformat()
         }
@@ -1051,7 +1076,7 @@ def get_enhanced_game_history(request, game_id):
         # Пока возвращаем только текущее состояние
         return Response({
             'history': history_entries,
-            'total_turns': game.turn
+            'total_turns': game.current_turn
         })
         
     except Exception as e:

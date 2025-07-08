@@ -181,8 +181,6 @@ const EnhancedGamePage: React.FC = () => {
           <div className="chart-container">
             <GameChart 
               gameId={parseInt(gameId!)}
-              history={gameHistory}
-              modelType="enhanced"
             />
           </div>
         )}

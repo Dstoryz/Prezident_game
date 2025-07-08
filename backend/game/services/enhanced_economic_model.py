@@ -2,6 +2,7 @@ import math
 import random
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
+from ..config.economic_config import *
 
 
 @dataclass
@@ -41,52 +42,52 @@ class EnhancedEconomicModel:
     """Расширенная макроэкономическая модель с двухсекторной структурой"""
     
     def __init__(self):
-        # Базовые параметры модели
-        self.base_gdp_growth = 2.0
-        self.base_inflation = 3.0
-        self.base_unemployment = 5.0
-        self.natural_unemployment = 4.0  # Натуральная безработица
+        # Используем параметры из конфигурационного файла
+        self.base_gdp_growth = TECHNOLOGY_GROWTH_RATE
+        self.base_inflation = INITIAL_INFLATION
+        self.base_unemployment = INITIAL_UNEMPLOYMENT
+        self.natural_unemployment = INITIAL_UNEMPLOYMENT
         
         # Параметры закона Оукена
         self.okun_coefficient = 2.0
         
         # Параметры кривой Филлипса
         self.inflation_expectations_weight = 0.7
-        self.output_gap_sensitivity = 0.5
+        self.output_gap_sensitivity = INFLATION_SENSITIVITY
         self.exchange_rate_sensitivity = 0.3
         
         # Параметры правила Тейлора
-        self.inflation_target = 4.0
-        self.neutral_rate = 2.0
+        self.inflation_target = INFLATION_TARGET
+        self.neutral_rate = INITIAL_INTEREST_RATE
         self.taylor_pi_weight = 0.5
         self.taylor_y_weight = 0.5
         
         # Параметры внешней торговли
         self.base_export_share = 0.3
         self.base_import_share = 0.25
-        self.exchange_rate_sensitivity_trade = 0.2
+        self.exchange_rate_sensitivity_trade = EXCHANGE_RATE_VOLATILITY
         self.interest_rate_sensitivity_exchange = 0.1
         
         # Параметры демографии
-        self.base_population_growth = 0.01
+        self.base_population_growth = POPULATION_GROWTH_RATE / 100
         self.base_migration = 0.005
         self.demographic_transition = 0.001
         self.migration_gdp_sensitivity = 0.1
         self.migration_unemployment_sensitivity = 0.05
         
         # Параметры кризисов
-        self.crisis_probability = 0.1  # 10% вероятность кризиса в квартал
+        self.crisis_probability = CRISIS_PROBABILITY_BASE
         
-        # Начальные значения
-        self.initial_capital_industry = 600.0
-        self.initial_capital_services = 400.0
-        self.initial_labor_industry = 0.4
-        self.initial_labor_services = 0.6
+        # Начальные значения из конфига
+        self.initial_capital_industry = INITIAL_GDP * INDUSTRY_SHARE
+        self.initial_capital_services = INITIAL_GDP * SERVICES_SHARE
+        self.initial_labor_industry = INDUSTRY_SHARE
+        self.initial_labor_services = SERVICES_SHARE
         self.initial_technology_industry = 1.0
         self.initial_technology_services = 1.0
-        self.initial_population = 10.0
+        self.initial_population = INITIAL_POPULATION
         self.initial_exchange_rate = 1.0
-        self.initial_money_supply = 1000.0
+        self.initial_money_supply = INITIAL_GDP
         self.initial_gold_reserves = 100.0
         self.initial_external_debt = 0.0
         
@@ -413,6 +414,7 @@ class EnhancedEconomicModel:
         return {
             # Основные экономические показатели
             'gdp_growth': round(gdp_growth, 2),
+            'gdp_absolute': round(total_gdp, 2),
             'total_gdp': round(total_gdp, 2),
             'inflation': round(inflation, 2),
             'unemployment': round(unemployment, 2),
@@ -464,24 +466,56 @@ class EnhancedEconomicModel:
             
             # Кризисные данные
             'crisis': crisis,
-            
             # Параметры модели
-            'model_type': 'enhanced'
-        }
-    
+            'model_type': 'enhanced',
+            # Инвестиции (сумма прироста капитала)
+            'investments': round((prev_industry_capital * 0.02) + (prev_services_capital * 0.02), 2),
+            # Бюджет для API
+            'budget': {
+                'total_revenue': round(budget_data['total_revenue'], 2),
+                'total_spending': round(budget_data['total_spending'], 2),
+                'budget_balance': round(budget_data['budget_balance'], 2),
+                'accumulated_reserves': round(budget_data.get('accumulated_reserves', 0.0), 2),
+                'social_transfers': round(budget_data['social_transfers'], 2),
+                'external_debt': round(external_debt, 2),
+            }
+        
+        } 
+
     def calculate_president_rating(self, gdp_growth: float, inflation: float, 
                                  unemployment: float, public_mood: float,
                                  budget_balance: float, healthcare_quality: float) -> float:
-        """Рассчитать рейтинг президента"""
-        base_rating = 50.0
-        gdp_bonus = gdp_growth * 2.0
-        inflation_penalty = inflation * 2.0
-        unemployment_penalty = unemployment * 1.5
-        mood_bonus = (public_mood - 50.0) * 0.3
-        budget_bonus = -budget_balance * 0.5 if budget_balance < 0 else budget_balance * 0.1
-        healthcare_bonus = (healthcare_quality - 50.0) * 0.2
+        """Рассчитать рейтинг президента используя параметры из конфига"""
+        # Базовый рейтинг из конфига
+        rating = PRESIDENT_RATING_BASE
         
-        rating = (base_rating + gdp_bonus - inflation_penalty - unemployment_penalty + 
-                 mood_bonus + budget_bonus + healthcare_bonus)
+        # Влияние экономических показателей с весами из конфига
+        if gdp_growth > 0:
+            rating += gdp_growth * RATING_GROWTH_WEIGHT * 10.0
+        else:
+            rating += gdp_growth * RATING_GROWTH_WEIGHT * 15.0
         
+        # Влияние инфляции
+        if inflation > INFLATION_TARGET:
+            rating -= (inflation - INFLATION_TARGET) * RATING_INFLATION_WEIGHT * 10.0
+        elif inflation < INFLATION_TARGET:
+            rating += (INFLATION_TARGET - inflation) * RATING_INFLATION_WEIGHT * 5.0
+        
+        # Влияние безработицы
+        if unemployment > INITIAL_UNEMPLOYMENT:
+            rating -= (unemployment - INITIAL_UNEMPLOYMENT) * RATING_UNEMPLOYMENT_WEIGHT * 10.0
+        
+        # Влияние общественного настроения
+        rating += (public_mood - PUBLIC_MOOD_BASE) * 0.3
+        
+        # Влияние бюджета
+        if budget_balance > 0:
+            rating += budget_balance * 0.1
+        else:
+            rating += budget_balance * 0.2
+        
+        # Влияние качества здравоохранения
+        rating += (healthcare_quality - 50.0) * 0.2
+        
+        # Ограничиваем рейтинг
         return max(0.0, min(100.0, rating)) 

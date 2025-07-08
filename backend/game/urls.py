@@ -15,7 +15,7 @@ urlpatterns = [
     path('<int:game_id>/budget/', views.budget_data, name='budget_data'),
     path('<int:game_id>/demographics/', views.demographic_data, name='demographic_data'),
     path('<int:game_id>/production/', views.production_data, name='production_data'),
-    # Расширенная модель
+    # Расширенная модель - используем отдельные функции
     path('enhanced/<int:game_id>/enhanced_state/', views.get_enhanced_game_state, name='get_enhanced_game_state'),
     path('enhanced/<int:game_id>/next_enhanced_turn/', views.next_enhanced_turn, name='next_enhanced_turn'),
     path('enhanced/<int:game_id>/history/', views.get_enhanced_game_history, name='get_enhanced_game_history'),

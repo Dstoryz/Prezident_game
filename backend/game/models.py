@@ -12,6 +12,7 @@ class GameSession(models.Model):
     current_year = models.IntegerField(default=2024)
     current_quarter = models.IntegerField(default=1)
     elections_passed = models.IntegerField(default=0)
+    model_type = models.CharField(max_length=32, default='enhanced')  # Тип модели (обычная/расширенная)
     
     # Новые поля для бюджета и накоплений
     budget = models.FloatField(default=1000.0)  # Текущий бюджет (млн $)

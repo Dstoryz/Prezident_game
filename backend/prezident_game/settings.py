@@ -225,8 +225,6 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Отключаем верификацию email для демо
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Убираем username*
-ACCOUNT_USERNAME_REQUIRED = False  # Username не обязателен
-ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Аутентификация по email
 ACCOUNT_EMAIL_REQUIRED = True  # Email обязателен
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Президент] '
 

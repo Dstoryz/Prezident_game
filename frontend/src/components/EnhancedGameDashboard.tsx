@@ -165,7 +165,9 @@ const EnhancedGameDashboard: React.FC<EnhancedGameDashboardProps> = ({ gameId, o
             <h4>Эффекты:</h4>
             <ul>
               {Object.entries(crisis.effects).map(([key, value]) => (
-                <li key={key}>{key}: {value}</li>
+                <li key={key}>
+                  <span>{key}: {String(value)}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -281,7 +283,7 @@ const EnhancedGameDashboard: React.FC<EnhancedGameDashboardProps> = ({ gameId, o
             
             <div className="indicator">
               <label>Соц. трансферты</label>
-              <span className="value">{budget.social_transfers.toFixed(2)} млн $</span>
+              <span className="value">{(budget.social_transfers || 0).toFixed(2)} млн $</span>
             </div>
             
             <div className="indicator">
