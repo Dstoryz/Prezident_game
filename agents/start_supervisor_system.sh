@@ -3,6 +3,11 @@
 # 🏗️ Система запуска агентов с надзирателем
 # Проект: "Президент: Экономика и Власть"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$SCRIPT_DIR/.."
+
+cd "$PROJECT_ROOT"
+
 echo "🚀 Запуск системы агентов с надзирателем..."
 echo "=========================================="
 
@@ -17,13 +22,13 @@ check_agents_readiness() {
     echo "🔍 Проверка готовности агентов..."
     
     agents=(
-        "architect_agent.md"
-        "backend_agent.md" 
-        "frontend_agent.md"
-        "testing_agent.md"
-        "devops_agent.md"
-        "analyst_agent.md"
-        "supervisor_agent.md"
+        "agents/architect_agent.md"
+        "agents/backend_agent.md" 
+        "agents/frontend_agent.md"
+        "agents/testing_agent.md"
+        "agents/devops_agent.md"
+        "agents/analyst_agent.md"
+        "agents/supervisor_agent.md"
     )
     
     all_ready=true

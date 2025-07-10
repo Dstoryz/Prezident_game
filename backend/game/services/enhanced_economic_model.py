@@ -487,37 +487,120 @@ class EnhancedEconomicModel:
     def calculate_president_rating(self, gdp_growth: float, inflation: float, 
                                  unemployment: float, public_mood: float,
                                  budget_balance: float, healthcare_quality: float) -> float:
-        """Рассчитать рейтинг президента используя параметры из конфига"""
-        # Базовый рейтинг из конфига
-        rating = PRESIDENT_RATING_BASE
+        """Рассчитать рейтинг президента"""
+        # Базовый рейтинг
+        base_rating = 50.0
         
-        # Влияние экономических показателей с весами из конфига
-        if gdp_growth > 0:
-            rating += gdp_growth * RATING_GROWTH_WEIGHT * 10.0
-        else:
-            rating += gdp_growth * RATING_GROWTH_WEIGHT * 15.0
+        # Влияние экономических показателей
+        gdp_impact = gdp_growth * 2.0  # Рост ВВП положительно влияет
+        inflation_impact = -inflation * 1.5  # Инфляция отрицательно влияет
+        unemployment_impact = -unemployment * 2.0  # Безработица отрицательно влияет
         
-        # Влияние инфляции
-        if inflation > INFLATION_TARGET:
-            rating -= (inflation - INFLATION_TARGET) * RATING_INFLATION_WEIGHT * 10.0
-        elif inflation < INFLATION_TARGET:
-            rating += (INFLATION_TARGET - inflation) * RATING_INFLATION_WEIGHT * 5.0
-        
-        # Влияние безработицы
-        if unemployment > INITIAL_UNEMPLOYMENT:
-            rating -= (unemployment - INITIAL_UNEMPLOYMENT) * RATING_UNEMPLOYMENT_WEIGHT * 10.0
-        
-        # Влияние общественного настроения
-        rating += (public_mood - PUBLIC_MOOD_BASE) * 0.3
+        # Влияние настроения населения
+        mood_impact = (public_mood - 50.0) * 0.5
         
         # Влияние бюджета
+        budget_impact = 0.0
         if budget_balance > 0:
-            rating += budget_balance * 0.1
-        else:
-            rating += budget_balance * 0.2
+            budget_impact = 5.0  # Профицит положительно влияет
+        elif budget_balance < -10:
+            budget_impact = -10.0  # Большой дефицит отрицательно влияет
         
         # Влияние качества здравоохранения
-        rating += (healthcare_quality - 50.0) * 0.2
+        healthcare_impact = (healthcare_quality - 50.0) * 0.3
         
-        # Ограничиваем рейтинг
-        return max(0.0, min(100.0, rating)) 
+        # Итоговый рейтинг
+        rating = (base_rating + gdp_impact + inflation_impact + unemployment_impact + 
+                 mood_impact + budget_impact + healthcare_impact)
+        
+        return max(0.0, min(100.0, rating))
+
+    def initialize_economy(self, initial_params: Dict[str, float]) -> Dict[str, float]:
+        """Инициализация экономики с начальными параметрами"""
+        gdp = initial_params.get('gdp', 1000000)
+        population = initial_params.get('population', 100000) / 1000000  # Конвертируем в миллионы
+        inflation = initial_params.get('inflation', 2.0)
+        unemployment = initial_params.get('unemployment', 5.0)
+        budget_deficit = initial_params.get('budget_deficit', 0.0)
+        
+        # Создаем начальные сектора
+        sector_data = {
+            'industry': SectorData(
+                capital=gdp * 0.6,
+                labor=0.35,
+                technology=1.0,
+                output=gdp * 0.6,
+                alpha=0.4
+            ),
+            'services': SectorData(
+                capital=gdp * 0.4,
+                labor=0.65,
+                technology=1.0,
+                output=gdp * 0.4,
+                alpha=0.3
+            )
+        }
+        
+        # Рассчитываем секторальный ВВП
+        sectoral_gdp = self.calculate_sectoral_gdp(sector_data)
+        
+        # Рассчитываем торговый баланс
+        trade_data = self.calculate_trade_balance(gdp, 1.0, 5.0)
+        
+        # Рассчитываем бюджет
+        spending_priorities = {
+            'education': 20.0,
+            'healthcare': 20.0,
+            'defense': 20.0,
+            'infrastructure': 20.0,
+            'social': 20.0
+        }
+        
+        budget_data = self.calculate_budget(
+            gdp, 20.0, trade_data, 25.0, gdp * 0.1, spending_priorities
+        )
+        
+        # Рассчитываем демографию
+        gdp_per_capita = gdp / population
+        demographics = self.calculate_demographics(population, gdp_per_capita, unemployment, 50.0)
+        
+        # Рассчитываем настроение населения
+        public_mood = self.calculate_public_mood(50.0, 0.0, gdp * 0.1 / population, unemployment)
+        
+        # Рассчитываем рейтинг президента
+        president_rating = self.calculate_president_rating(0.0, inflation, unemployment, public_mood, budget_data['budget_balance'], 50.0)
+        
+        # Возвращаем все показатели
+        return {
+            'gdp_absolute': gdp,
+            'gdp_growth': 0.0,  # Начальный рост
+            'inflation': inflation,
+            'unemployment': unemployment,
+            'interest_rate': 5.0,
+            'exchange_rate': 1.0,
+            'president_rating': president_rating,
+            'public_mood': public_mood,
+            'industry_output': sectoral_gdp['industry_output'],
+            'services_output': sectoral_gdp['services_output'],
+            'exports': trade_data['exports'],
+            'imports': trade_data['imports'],
+            'trade_balance': trade_data['trade_balance'],
+            'tax_revenue': budget_data['tax_revenue'],
+            'total_revenue': budget_data['total_revenue'],
+            'total_spending': budget_data['total_spending'],
+            'budget_balance': budget_data['budget_balance'],
+            'social_transfers': gdp * 0.1,
+            'population': population,
+            'money_supply': gdp * 0.8,
+            'gold_reserves': 100.0,
+            'reserve_ratio': 0.1,
+            'refinance_rate': 0.05,
+            'external_debt': 0.0,
+            'investments': 20.0,
+            'education_spending': budget_data['total_spending'] * 0.2,
+            'healthcare_spending': budget_data['total_spending'] * 0.2,
+            'defense_spending': budget_data['total_spending'] * 0.2,
+            'infrastructure_spending': budget_data['total_spending'] * 0.2,
+            'social_spending': budget_data['total_spending'] * 0.2,
+            'accumulated_reserves': gdp * 0.05
+        } 
