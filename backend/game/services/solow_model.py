@@ -78,7 +78,11 @@ class SolowModel:
                 'consumption_per_capita': 0.0
             }
         
-        capital_intensity = (savings_rate * self.base_technology / effective_depreciation) ** (1 / (1 - self.alpha))
+        # Защита от деления на ноль
+        if abs(1 - self.alpha) < 0.001:
+            capital_intensity = 1.0
+        else:
+            capital_intensity = (savings_rate * self.base_technology / effective_depreciation) ** (1 / (1 - self.alpha))
         output_per_capita = self.base_technology * (capital_intensity ** self.alpha)
         consumption_per_capita = (1 - savings_rate) * output_per_capita
         

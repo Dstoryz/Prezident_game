@@ -435,6 +435,8 @@ class EnhancedEconomicModel:
             # Внешняя торговля и курс
             'exports': round(trade_data['exports'], 2),
             'imports': round(trade_data['imports'], 2),
+            'export_volume': round(trade_data['exports'], 2),
+            'import_volume': round(trade_data['imports'], 2),
             'trade_balance': round(trade_data['trade_balance'], 2),
             'exchange_rate': round(exchange_rate, 3),
             

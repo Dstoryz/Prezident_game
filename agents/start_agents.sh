@@ -10,25 +10,25 @@ echo ""
 
 # Проверка наличия файлов агентов
 echo "📋 Проверка файлов агентов..."
-if [ -f "agents/architect_agent.md" ]; then
+if [ -f "architect_agent.md" ]; then
     echo "✅ Архитектор-агент готов к работе"
 else
     echo "❌ Файл architect_agent.md не найден"
 fi
 
-if [ -f "agents/frontend_agent.md" ]; then
+if [ -f "frontend_agent.md" ]; then
     echo "✅ Фронтенд-агент готов к работе"
 else
     echo "❌ Файл frontend_agent.md не найден"
 fi
 
-if [ -f "agents/backend_agent.md" ]; then
+if [ -f "backend_agent.md" ]; then
     echo "✅ Бэкенд-агент готов к работе"
 else
     echo "❌ Файл backend_agent.md не найден"
 fi
 
-if [ -f "agents/testing_agent.md" ]; then
+if [ -f "testing_agent.md" ]; then
     echo "✅ Агент-тестировщик готов к работе"
 else
     echo "❌ Файл testing_agent.md не найден"
@@ -42,6 +42,7 @@ echo "🏗️  АРХИТЕКТОР-АГЕНТ (Главный управляю�
 echo "   Архитектор-агент, проанализируй ТЗ и создай план разработки"
 echo "   Архитектор-агент, создай структуру папок для проекта"
 echo "   Архитектор-агент, координируй разработку MVP"
+echo "   Архитектор-агент, контролируй миграцию на EnhancedEconomicModel"
 echo ""
 
 echo "🎨 ФРОНТЕНД-АГЕНТ:"
@@ -54,12 +55,14 @@ echo "⚙️  БЭКЕНД-АГЕНТ:"
 echo "   Бэкенд-агент, настрой Django проект"
 echo "   Бэкенд-агент, создай модели данных"
 echo "   Бэкенд-агент, реализуй API для начала игры"
+echo "   Бэкенд-агент, используй ТОЛЬКО EnhancedEconomicModel"
 echo ""
 
 echo "🐛 АГЕНТ-ТЕСТИРОВЩИК:"
 echo "   Агент-тестировщик, проверь текущее состояние проекта"
-echo "   Агент-тестировщик, протестируй экономическую логику"
+echo "   Агент-тестировщик, протестируй EnhancedEconomicModel"
 echo "   Агент-тестировщик, найди ошибки в коде"
+echo "   Агент-тестировщик, проверь производительность модели"
 echo ""
 
 echo "📚 ДОПОЛНИТЕЛЬНЫЕ КОМАНДЫ:"

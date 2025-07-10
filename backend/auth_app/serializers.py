@@ -10,11 +10,39 @@ class UserRegistrationSerializer(RegisterSerializer):
     Кастомный сериализатор регистрации для dj-rest-auth с созданием профиля пользователя
     """
     username = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=True)
+    password1 = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)
+    
+    def validate(self, attrs):
+        # Проверяем, что пароли совпадают
+        if attrs['password1'] != attrs['password2']:
+            raise serializers.ValidationError("Пароли не совпадают")
+        
+        # Проверяем, что email уникален
+        if User.objects.filter(email=attrs['email']).exists():
+            raise serializers.ValidationError("Пользователь с таким email уже существует")
+        
+        # Если username не указан, используем email
+        if not attrs.get('username'):
+            attrs['username'] = attrs['email']
+        
+        return attrs
     
     def save(self, request):
-        user = super().save(request)
-        from .models import UserProfile
+        # Получаем валидированные данные
+        data = self.validated_data
+        
+        # Создаем пользователя
+        user = User.objects.create_user(
+            email=data['email'],
+            username=data.get('username', data['email']),
+            password=data['password1']
+        )
+        
+        # Создаем профиль пользователя
         UserProfile.objects.create(user=user)
+        
         return user
 
 

@@ -66,15 +66,15 @@ const IndicatorsPanel: React.FC<IndicatorsPanelProps> = ({ indicators, budget })
         <div className="indicator-card">
           <h4>Инвестиции</h4>
           <div className="indicator-value neutral">
-            {indicators.investments.toFixed(2)}%
+            {(indicators.investments ?? 0).toFixed(2)}%
           </div>
           <small>% от ВВП</small>
         </div>
 
         <div className="indicator-card">
           <h4>Настроение</h4>
-          <div className={`indicator-value ${getRatingColor(indicators.public_mood)}`}>
-            {indicators.public_mood.toFixed(1)}%
+          <div className={`indicator-value ${getRatingColor(indicators.public_mood ?? 50)}`}>
+            {(indicators.public_mood ?? 50).toFixed(1)}%
           </div>
           <small>Настроение населения</small>
         </div>
@@ -82,7 +82,7 @@ const IndicatorsPanel: React.FC<IndicatorsPanelProps> = ({ indicators, budget })
         <div className="indicator-card">
           <h4>Экспорт</h4>
           <div className="indicator-value neutral">
-            {indicators.export_volume.toFixed(2)}%
+            {(indicators.export_volume ?? 0).toFixed(2)}%
           </div>
           <small>Объем экспорта</small>
         </div>
@@ -90,7 +90,7 @@ const IndicatorsPanel: React.FC<IndicatorsPanelProps> = ({ indicators, budget })
         <div className="indicator-card">
           <h4>Импорт</h4>
           <div className="indicator-value neutral">
-            {indicators.import_volume.toFixed(2)}%
+            {(indicators.import_volume ?? 0).toFixed(2)}%
           </div>
           <small>Объем импорта</small>
         </div>
@@ -102,6 +102,57 @@ const IndicatorsPanel: React.FC<IndicatorsPanelProps> = ({ indicators, budget })
           </div>
           <small>Всего жителей</small>
         </div>
+
+        {/* Расширенные показатели */}
+        {indicators.industry_output && (
+          <div className="indicator-card">
+            <h4>Промышленность</h4>
+            <div className="indicator-value neutral">
+              {indicators.industry_output.toFixed(2)} млн $
+            </div>
+            <small>ВВП промышленности</small>
+          </div>
+        )}
+
+        {indicators.services_output && (
+          <div className="indicator-card">
+            <h4>Услуги</h4>
+            <div className="indicator-value neutral">
+              {indicators.services_output.toFixed(2)} млн $
+            </div>
+            <small>ВВП услуг</small>
+          </div>
+        )}
+
+        {indicators.exchange_rate && (
+          <div className="indicator-card">
+            <h4>Обменный курс</h4>
+            <div className="indicator-value neutral">
+              {indicators.exchange_rate.toFixed(3)}
+            </div>
+            <small>Курс валюты</small>
+          </div>
+        )}
+
+        {indicators.external_debt && (
+          <div className="indicator-card">
+            <h4>Внешний долг</h4>
+            <div className={`indicator-value ${indicators.external_debt > 0 ? 'negative' : 'positive'}`}>
+              {indicators.external_debt.toFixed(2)} млн $
+            </div>
+            <small>Внешняя задолженность</small>
+          </div>
+        )}
+
+        {indicators.interest_rate && (
+          <div className="indicator-card">
+            <h4>Ключевая ставка</h4>
+            <div className="indicator-value neutral">
+              {indicators.interest_rate.toFixed(2)}%
+            </div>
+            <small>Текущая ставка ЦБ</small>
+          </div>
+        )}
       </div>
       {budget && (
         <div className="budget-panel">
@@ -125,6 +176,24 @@ const IndicatorsPanel: React.FC<IndicatorsPanelProps> = ({ indicators, budget })
               <span className="budget-label">Соц. трансферты:</span>
               <span className="budget-value">{(budget?.social_transfers ?? 0).toLocaleString()} млн $</span>
             </div>
+            <div className="budget-item">
+              <span className="budget-label">Накопления:</span>
+              <span className="budget-value">{(budget?.accumulated_reserves ?? 0).toLocaleString()} млн $</span>
+            </div>
+            {budget?.external_debt && (
+              <div className="budget-item">
+                <span className="budget-label">Внешний долг:</span>
+                <span className="budget-value" style={{color: (budget.external_debt ?? 0) > 0 ? '#e53935' : '#4caf50'}}>
+                  {(budget.external_debt ?? 0).toLocaleString()} млн $
+                </span>
+              </div>
+            )}
+            {(budget as any)?.gold_reserves && (
+              <div className="budget-item">
+                <span className="budget-label">Золотой запас:</span>
+                <span className="budget-value">{((budget as any).gold_reserves ?? 0).toLocaleString()} млн $</span>
+              </div>
+            )}
           </div>
         </div>
       )}

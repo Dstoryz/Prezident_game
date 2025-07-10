@@ -1,4 +1,60 @@
-# 🚨 ВАЖНОЕ ПРЕДУПРЕЖДЕНИЕ
+# КРИТИЧЕСКИЕ ПРАВИЛА ДЛЯ ВСЕХ АГЕНТОВ
+
+## 🚨 ПРАВИЛЬНЫЙ ЗАПУСК СЕРВЕРОВ
+
+### Django Backend
+**ВАЖНО: Всегда запускать из директории `backend/`!**
+
+```bash
+# ПРАВИЛЬНО:
+cd /home/alex/Downloads/Prezident_project/backend
+python manage.py runserver 0.0.0.0:8000
+
+# НЕПРАВИЛЬНО:
+cd /home/alex/Downloads/Prezident_project
+python manage.py runserver 0.0.0.0:8000  # ОШИБКА: файл не найден
+```
+
+### React Frontend
+```bash
+# ПРАВИЛЬНО:
+cd /home/alex/Downloads/Prezident_project/frontend
+npm start
+
+# Или из корня проекта:
+cd /home/alex/Downloads/Prezident_project
+cd frontend && npm start
+```
+
+### Структура проекта
+```
+Prezident_project/
+├── backend/           ← Django проект здесь
+│   ├── manage.py      ← Django команды отсюда
+│   ├── prezident_game/
+│   ├── auth_app/
+│   └── game/
+├── frontend/          ← React проект здесь
+│   ├── package.json
+│   └── src/
+└── agents/            ← Агенты здесь
+```
+
+### Проверка работоспособности
+После запуска серверов проверить:
+1. Django: http://localhost:8000/api/auth/register/ (должен возвращать JSON, не HTML)
+2. React: http://localhost:3000 (должен открыться интерфейс)
+
+### Автоматический запуск
+Использовать скрипт `start_project.sh` из корня проекта:
+```bash
+cd /home/alex/Downloads/Prezident_project
+./start_project.sh
+```
+
+---
+
+# ОСНОВНЫЕ ПРАВИЛА РАЗРАБОТКИ
 
 ## ⚠️ ЭТИ ФАЙЛЫ НЕЛЬЗЯ УДАЛЯТЬ БЕЗ ПРЯМОГО УКАЗАНИЯ!
 

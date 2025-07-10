@@ -27,7 +27,7 @@ class UserRegistrationView(APIView):
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
+            user = serializer.save(request)
             if user is None:
                 return Response({'error': 'Ошибка создания пользователя'}, status=status.HTTP_400_BAD_REQUEST)
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')

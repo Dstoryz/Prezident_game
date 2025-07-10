@@ -13,6 +13,14 @@ export interface EconomicIndicators {
   external_debt?: number;
   population?: number;
   interest_rate?: number;
+  // Дополнительные поля из базовой модели
+  investments?: number;
+  public_mood?: number;
+  export_volume?: number;
+  import_volume?: number;
+  reserve_ratio?: number;
+  refinance_rate?: number;
+  printing_press_active?: boolean;
 }
 
 export interface BudgetData {
@@ -23,20 +31,39 @@ export interface BudgetData {
   // Новые поля для расширенной модели
   social_transfers?: number;
   external_debt?: number;
+  // Дополнительные поля из базовой модели
+  tax_revenue?: number;
+  customs_revenue?: number;
+  education_spending?: number;
+  healthcare_spending?: number;
+  defense_spending?: number;
+  infrastructure_spending?: number;
+  social_spending?: number;
 }
 
 export interface GameSession {
   id: number;
   user: number;
-  turn: number;
+  current_turn: number;
+  current_year: number;
+  current_quarter: number;
+  elections_passed: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
   model_type: string;
-  indicators: EconomicIndicators;
-  budget: BudgetData;
+  budget: number;
+  accumulated_reserves: number;
+  // Вложенные объекты
+  parameters?: GameParameters;
+  current_indicators?: EconomicIndicators;
+  current_budget?: BudgetData;
+  current_events?: GameEvent[];
   // Новые поля для расширенной модели
   crisis?: CrisisInfo;
+  // Альтернативные поля для совместимости
+  turn?: number;
+  indicators?: EconomicIndicators;
 }
 
 export interface CrisisInfo {
@@ -80,6 +107,9 @@ export interface GameChartProps {
 
 export interface GameTipsProps {
   modelType?: 'basic' | 'enhanced';
+  currentEvent?: GameEvent;
+  indicators?: EconomicIndicators;
+  parameters?: GameParameters;
 }
 
 export interface EnhancedGameState {
@@ -103,6 +133,15 @@ export interface NextTurnRequest {
   tax_rate?: number;
   government_spending?: number;
   customs_duty?: number;
+  education_priority?: number;
+  healthcare_priority?: number;
+  defense_priority?: number;
+  infrastructure_priority?: number;
+  social_priority?: number;
+  social_transfers?: number;
+  reserve_ratio?: number;
+  refinance_rate?: number;
+  printing_press_active?: boolean;
 }
 
 export interface ApiResponse<T> {

@@ -121,16 +121,20 @@ class GameStateSerializer(serializers.Serializer):
 
 class NextTurnRequestSerializer(serializers.Serializer):
     """Сериализатор для запроса следующего хода"""
-    interest_rate = serializers.FloatField(min_value=0.0, max_value=20.0)
-    tax_rate = serializers.FloatField(min_value=0.0, max_value=50.0)
-    government_spending = serializers.FloatField(min_value=10.0, max_value=50.0)
-    customs_duty = serializers.FloatField(min_value=0.0, max_value=30.0)
+    interest_rate = serializers.FloatField(min_value=0.0, max_value=20.0, required=False)
+    tax_rate = serializers.FloatField(min_value=0.0, max_value=50.0, required=False)
+    government_spending = serializers.FloatField(min_value=10.0, max_value=50.0, required=False)
+    customs_duty = serializers.FloatField(min_value=0.0, max_value=30.0, required=False)
     education_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
     healthcare_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
     defense_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
     infrastructure_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
     social_priority = serializers.FloatField(min_value=0.0, max_value=40.0, required=False, default=20.0)
     social_transfers = serializers.FloatField(min_value=0.0, max_value=10000.0, required=False, default=0.0)
+    # Дополнительные поля для совместимости
+    reserve_ratio = serializers.FloatField(min_value=0.0, max_value=1.0, required=False)
+    refinance_rate = serializers.FloatField(min_value=0.0, max_value=1.0, required=False)
+    printing_press_active = serializers.BooleanField(required=False)
 
     def validate(self, data):
         """Валидация бюджетных приоритетов"""

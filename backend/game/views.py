@@ -22,7 +22,6 @@ from .serializers import (
     BudgetDataSerializer, DemographicDataSerializer, ProductionDataSerializer,
     SocialDataSerializer, GameStateSerializer
 )
-from .services.economic_logic import EconomicEngine
 from .services.event_generator import EventGenerator
 from .services.enhanced_economic_model import EnhancedEconomicModel, EconomicParameters
 
@@ -65,19 +64,20 @@ def start_game(request):
                 social_priority=initial_params.get('social_priority', 20.0)
             )
             
-            # Рассчитываем начальные показатели
-            economic_engine = EconomicEngine()
-            indicators_data = economic_engine.calculate_indicators({
-                'interest_rate': parameters.interest_rate,
-                'tax_rate': parameters.tax_rate,
-                'government_spending': parameters.government_spending,
-                'customs_duty': parameters.customs_duty,
-                'education_priority': parameters.education_priority,
-                'healthcare_priority': parameters.healthcare_priority,
-                'defense_priority': parameters.defense_priority,
-                'infrastructure_priority': parameters.infrastructure_priority,
-                'social_priority': parameters.social_priority
-            })
+            # Рассчитываем начальные показатели с расширенной моделью
+            enhanced_model = EnhancedEconomicModel()
+            economic_params = EconomicParameters(
+                interest_rate=parameters.interest_rate,
+                tax_rate=parameters.tax_rate,
+                government_spending=parameters.government_spending,
+                customs_duty=parameters.customs_duty,
+                education_priority=parameters.education_priority,
+                healthcare_priority=parameters.healthcare_priority,
+                defense_priority=parameters.defense_priority,
+                infrastructure_priority=parameters.infrastructure_priority,
+                social_priority=parameters.social_priority
+            )
+            indicators_data = enhanced_model.calculate_indicators(economic_params)
             
             # Создаем экономические показатели
             indicators = EconomicIndicators.objects.create(
@@ -96,7 +96,26 @@ def start_game(request):
             
             # Создаем бюджетные данные
             budget_fields = {f.name for f in BudgetData._meta.get_fields()}
-            clean_budget_data = {k: v for k, v in indicators_data['budget_data'].items() if k in budget_fields}
+            if 'budget_data' in indicators_data:
+                clean_budget_data = {k: v for k, v in indicators_data['budget_data'].items() if k in budget_fields}
+            else:
+                # Если budget_data нет, создаем данные по умолчанию
+                clean_budget_data = {
+                    'tax_revenue': 0.0,
+                    'customs_revenue': 0.0,
+                    'total_revenue': 0.0,
+                    'education_spending': 0.0,
+                    'healthcare_spending': 0.0,
+                    'defense_spending': 0.0,
+                    'infrastructure_spending': 0.0,
+                    'social_spending': 0.0,
+                    'total_spending': 0.0,
+                    'budget_balance': 0.0,
+                    'accumulated_reserves': 500.0,
+                    'social_transfers': 0.0,
+                    'gold_reserves': 100.0,
+                    'external_debt': 0.0
+                }
             budget_data = BudgetData.objects.create(
                 game_session=game_session,
                 turn=1,
@@ -104,25 +123,64 @@ def start_game(request):
             )
             
             # Создаем демографические данные
-            demographic_data = DemographicData.objects.create(
-                game_session=game_session,
-                turn=1,
-                **indicators_data['demographic_data']
-            )
+            if 'demographic_data' in indicators_data:
+                demographic_data = DemographicData.objects.create(
+                    game_session=game_session,
+                    turn=1,
+                    **indicators_data['demographic_data']
+                )
+            else:
+                # Если demographic_data нет, создаем данные по умолчанию
+                demographic_data = DemographicData.objects.create(
+                    game_session=game_session,
+                    turn=1,
+                    population=150.0,
+                    natural_growth=0.5,
+                    migration_growth=0.0,
+                    life_expectancy=75.0,
+                    gdp_per_capita=10000.0,
+                    social_transfers_per_capita=0.0
+                )
             
             # Создаем производственные данные
-            production_data = ProductionData.objects.create(
-                game_session=game_session,
-                turn=1,
-                **indicators_data['production_data']
-            )
+            if 'production_data' in indicators_data:
+                production_data = ProductionData.objects.create(
+                    game_session=game_session,
+                    turn=1,
+                    **indicators_data['production_data']
+                )
+            else:
+                # Если production_data нет, создаем данные по умолчанию
+                production_data = ProductionData.objects.create(
+                    game_session=game_session,
+                    turn=1,
+                    capital_stock=1000.0,
+                    labor_force=75.0,
+                    technology_progress=1.0,
+                    capital_intensity=13.33,
+                    labor_productivity=13.33,
+                    savings_rate=20.0,
+                    depreciation_rate=5.0,
+                    capital_share=30.0
+                )
             
             # Создаем социальные данные
-            social_data = SocialData.objects.create(
-                game_session=game_session,
-                turn=1,
-                **indicators_data['social_data']
-            )
+            if 'social_data' in indicators_data:
+                social_data = SocialData.objects.create(
+                    game_session=game_session,
+                    turn=1,
+                    **indicators_data['social_data']
+                )
+            else:
+                # Если social_data нет, создаем данные по умолчанию
+                social_data = SocialData.objects.create(
+                    game_session=game_session,
+                    turn=1,
+                    education_level=12.0,
+                    healthcare_quality=70.0,
+                    social_stability=75.0,
+                    income_inequality=0.35
+                )
             
             # Создаем запись в истории
             GameHistory.objects.create(
@@ -170,20 +228,26 @@ def start_game(request):
 def next_turn(request, game_id):
     """Обработать следующий ход"""
     try:
+        print(f"[next_turn] Получен запрос для игры {game_id}")
+        print(f"[next_turn] Данные запроса: {request.data}")
+        
         game_session = get_object_or_404(GameSession, id=game_id, user=request.user)
         
         # Валидируем параметры
         serializer = NextTurnRequestSerializer(data=request.data)
         if not serializer.is_valid():
+            print(f"[next_turn] Ошибки валидации: {serializer.errors}")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         parameters_data = serializer.validated_data
+        print(f"[next_turn] Валидированные данные: {parameters_data}")
         
         with transaction.atomic():
             # Обновляем параметры
             parameters = game_session.parameters
             for field, value in parameters_data.items():
-                setattr(parameters, field, value)
+                if hasattr(parameters, field):
+                    setattr(parameters, field, value)
             parameters.save()
             
             # Получаем предыдущие данные
@@ -192,23 +256,19 @@ def next_turn(request, game_id):
             previous_demographics = game_session.demographic_data.filter(turn=game_session.current_turn).first()
             previous_production = game_session.production_data.filter(turn=game_session.current_turn).first()
             
-            # Рассчитываем новые показатели
-            economic_engine = EconomicEngine()
-            indicators_data = economic_engine.calculate_indicators(
-                parameters_data,
-                EconomicIndicatorsSerializer(previous_indicators).data if previous_indicators else None,
-                BudgetDataSerializer(previous_budget).data if previous_budget else None,
-                DemographicDataSerializer(previous_demographics).data if previous_demographics else None,
-                ProductionDataSerializer(previous_production).data if previous_production else None
+            # Рассчитываем новые показатели с расширенной моделью
+            enhanced_model = EnhancedEconomicModel()
+            economic_params = EconomicParameters(**parameters_data)
+            indicators_data = enhanced_model.calculate_indicators(
+                economic_params,
+                EconomicIndicatorsSerializer(previous_indicators).data if previous_indicators else None
             )
             
             # Генерируем события
             event_generator = EventGenerator()
             events = event_generator.generate_events(game_session.current_turn)
             
-            # Применяем влияние событий
-            if events:
-                indicators_data = economic_engine.apply_event_impacts(indicators_data, events)
+            # Примечание: EnhancedEconomicModel уже включает обработку событий в calculate_indicators
             
             # Обновляем игровую сессию
             game_session.current_turn += 1
@@ -327,6 +387,9 @@ def next_turn(request, game_id):
             }, status=status.HTTP_200_OK)
             
     except Exception as e:
+        print(f"[next_turn] Исключение: {str(e)}")
+        import traceback
+        print(f"[next_turn] Traceback: {traceback.format_exc()}")
         return Response({
             'error': f'Ошибка при обработке хода: {str(e)}'
         }, status=status.HTTP_400_BAD_REQUEST)

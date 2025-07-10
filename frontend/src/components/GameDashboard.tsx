@@ -44,10 +44,12 @@ const GameDashboard: React.FC = () => {
   const handleNextTurn = async (parameters: any) => {
     if (!game) return;
 
+    console.log('GameDashboard: handleNextTurn вызван с параметрами:', parameters);
     setLoading(true);
     setError(null);
     try {
       const response = await gameApi.nextTurn(game.id, parameters);
+      console.log('GameDashboard: получен ответ:', response);
       if (response.success && response.game) {
         setGame(response.game);
         setChartRefreshTrigger(prev => prev + 1); // Обновляем график после хода
@@ -60,6 +62,7 @@ const GameDashboard: React.FC = () => {
         setError(response.message);
       }
     } catch (err) {
+      console.error('GameDashboard: ошибка при обработке хода:', err);
       setError('Ошибка при обработке хода');
     } finally {
       setLoading(false);
@@ -133,7 +136,7 @@ const GameDashboard: React.FC = () => {
         <div className="header-left">
           <h1>Президент: Экономика и Власть</h1>
           <div className="game-info">
-            <span>Ход: {game.current_turn}</span>
+            <span>Ход: {game.current_turn || game.turn}</span>
             <span>Год: {game.current_year}</span>
             <span>Квартал: {game.current_quarter}</span>
             <span>Выборы: {game.elections_passed}</span>
@@ -146,11 +149,13 @@ const GameDashboard: React.FC = () => {
 
       <div className="game-content">
         <div className="left-panel">
-          <ParametersPanel 
-            parameters={game.parameters}
-            onNextTurn={handleNextTurn}
-            loading={loading}
-          />
+          {game.parameters && (
+            <ParametersPanel 
+              parameters={game.parameters}
+              onNextTurn={handleNextTurn}
+              loading={loading}
+            />
+          )}
           
           {game.current_indicators && (
             <IndicatorsPanel indicators={game.current_indicators} budget={game.current_budget} />
@@ -161,9 +166,7 @@ const GameDashboard: React.FC = () => {
           <GameChart gameId={game.id} refreshTrigger={chartRefreshTrigger} />
           
           <GameTips 
-            currentEvent={game.current_events?.[0]}
-            indicators={game.current_indicators || undefined}
-            parameters={game.parameters}
+            modelType={game.model_type as 'basic' | 'enhanced'}
           />
           
           <EventsPanel events={game.current_events} />

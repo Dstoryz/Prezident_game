@@ -112,7 +112,9 @@ export const gameApi = {
 
   // Сделать следующий ход
   nextTurn: async (gameId: number, parameters: NextTurnRequest): Promise<ApiResponse<GameSession>> => {
+    console.log('Отправляем данные для следующего хода:', { gameId, parameters });
     const response = await api.post(`/game/${gameId}/next-turn/`, parameters);
+    console.log('Ответ от сервера:', response.data);
     return response.data;
   },
 

@@ -1,5 +1,5 @@
 from typing import Dict, Any, Optional
-from .economic_logic import EconomicEngine
+from .enhanced_economic_model import EnhancedEconomicModel, EconomicParameters
 from .event_generator import EventGenerator
 
 
@@ -7,23 +7,27 @@ class GameEngine:
     """Основной игровой движок"""
     
     def __init__(self):
-        self.economic_engine = EconomicEngine()
+        self.economic_engine = EnhancedEconomicModel()
         self.event_generator = EventGenerator()
     
     def start_new_game(self) -> Dict[str, Any]:
         """Начать новую игру"""
         # Создаем начальные показатели
-        initial_parameters = {
-            'interest_rate': 5.0,
-            'tax_rate': 20.0,
-            'government_spending': 25.0,
-            'customs_duty': 5.0
-        }
-        
-        initial_indicators = self.economic_engine.calculate_indicators(initial_parameters)
+        initial_params = EconomicParameters(
+            interest_rate=5.0,
+            tax_rate=20.0,
+            government_spending=25.0,
+            customs_duty=5.0
+        )
+        initial_indicators = self.economic_engine.calculate_indicators(initial_params)
         
         return {
-            'parameters': initial_parameters,
+            'parameters': {
+                'interest_rate': initial_params.interest_rate,
+                'tax_rate': initial_params.tax_rate,
+                'government_spending': initial_params.government_spending,
+                'customs_duty': initial_params.customs_duty
+            },
             'indicators': initial_indicators,
             'events': [],
             'turn': 1,
@@ -44,8 +48,9 @@ class GameEngine:
         previous_indicators = current_state.get('indicators', {})
         
         # Рассчитываем новые показатели
+        new_params = EconomicParameters(**parameters)
         new_indicators = self.economic_engine.calculate_indicators(
-            parameters, previous_indicators
+            new_params, previous_indicators
         )
         
         # Генерируем события
@@ -54,9 +59,7 @@ class GameEngine:
             current_state.get('turn', 1), current_rating
         )
         
-        # Применяем влияние событий
-        if events:
-            new_indicators = self.economic_engine.apply_event_impacts(new_indicators, events)
+        # Примечание: EnhancedEconomicModel уже включает обработку событий в calculate_indicators
         
         # Обновляем время
         current_turn = current_state.get('turn', 1)
