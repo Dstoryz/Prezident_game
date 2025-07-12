@@ -10,8 +10,12 @@ import UserProfile from './auth/UserProfile';
 import { useAuth } from '../contexts/AuthContext';
 import './GameDashboard.css';
 
-const GameDashboard: React.FC = () => {
-  const [game, setGame] = useState<GameSession | null>(null);
+interface GameDashboardProps {
+  initialGame?: GameSession | null;
+}
+
+const GameDashboard: React.FC<GameDashboardProps> = ({ initialGame = null }) => {
+  const [game, setGame] = useState<GameSession | null>(initialGame);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [gameOver, setGameOver] = useState(false);
@@ -48,12 +52,15 @@ const GameDashboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      const prevIndicators = game.current_indicators;
       const response = await gameApi.nextTurn(game.id, parameters);
       console.log('GameDashboard: получен ответ:', response);
       if (response.success && response.game) {
+        const newIndicators = response.game.current_indicators;
+        console.log('GameDashboard: индикаторы до:', prevIndicators);
+        console.log('GameDashboard: индикаторы после:', newIndicators);
         setGame(response.game);
         setChartRefreshTrigger(prev => prev + 1); // Обновляем график после хода
-        
         if (response.game_over) {
           setGameOver(true);
           setGameOverReason(response.game_over_reason || 'Игра окончена');
@@ -85,9 +92,27 @@ const GameDashboard: React.FC = () => {
   };
 
   useEffect(() => {
-    // Автоматически начинаем игру при загрузке
-    startNewGame();
+    console.log('GameDashboard initialGame:', initialGame);
+    if (!game) {
+      startNewGame();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Проверка валидности данных
+  if (initialGame && (!initialGame.id || !initialGame.current_indicators)) {
+    return (
+      <div className="game-dashboard">
+        <div className="error">
+          <h2>Ошибка</h2>
+          <p>Недостаточно данных для отображения игры. Проверьте авторизацию и корректность ответа API.</p>
+          <pre style={{textAlign: 'left', background: '#222', color: '#fff', padding: '10px', borderRadius: '8px', maxWidth: '90vw', overflowX: 'auto'}}>{JSON.stringify(initialGame, null, 2)}</pre>
+          <button onClick={startNewGame}>Попробовать снова</button>
+          <button onClick={logout} style={{marginTop: '16px', background: '#dc3545', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '8px', fontWeight: 600, cursor: 'pointer'}}>Выйти</button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading && !game) {
     return (

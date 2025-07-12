@@ -59,20 +59,24 @@ api.interceptors.response.use(
 export const authApi = {
   // Регистрация
   register: async (userData: { email: string; password: string }) => {
-    const response = await api.post('/dj-rest-auth/registration/', userData);
+    const response = await api.post('/auth/register/', userData);
     if (response.data.access) {
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
+    } else {
+      throw new Error('Токены не получены при регистрации');
     }
     return response.data;
   },
 
   // Вход
   login: async (credentials: { email: string; password: string }) => {
-    const response = await api.post('/dj-rest-auth/login/', credentials);
+    const response = await api.post('/auth/login/', credentials);
     if (response.data.access) {
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
+    } else {
+      throw new Error('Токены не получены при входе');
     }
     return response.data;
   },
@@ -80,19 +84,17 @@ export const authApi = {
   // Выход
   logout: async () => {
     try {
-      await api.post('/dj-rest-auth/logout/');
-      // Только при успешном выходе удаляем токены
+      await api.post('/auth/logout/');
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
     } catch (error) {
       console.error('Ошибка при выходе:', error);
-      // При ошибке токены НЕ удаляем, чтобы пользователь мог продолжить работу
     }
   },
 
   // Получить информацию о пользователе
   getUser: async () => {
-    const response = await api.get('/dj-rest-auth/user/');
+    const response = await api.get('/auth/user/');
     return response.data;
   },
 };

@@ -98,7 +98,13 @@ const IndicatorsPanel: React.FC<IndicatorsPanelProps> = ({ indicators, budget })
         <div className="indicator-card">
           <h4>Численность населения</h4>
           <div className="indicator-value neutral">
-            {(indicators.population ?? 0).toLocaleString()} чел.
+            {typeof indicators.population === 'number' && !isNaN(indicators.population) ? (
+              indicators.population >= 1_000_000
+                ? `${indicators.population.toLocaleString()} чел.`
+                : indicators.population >= 100_000
+                  ? `${(indicators.population / 1000).toFixed(0)} тыс. чел.`
+                  : `${indicators.population.toFixed(0)} чел.`
+            ) : '—'}
           </div>
           <small>Всего жителей</small>
         </div>

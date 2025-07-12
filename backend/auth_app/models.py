@@ -10,6 +10,10 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError('Email должен быть указан')
         email = self.normalize_email(email)
+        if not extra_fields.get('username'):
+            # Генерируем username на основе email и количества пользователей
+            base_username = email.split('@')[0]
+            extra_fields['username'] = f"{base_username}{User.objects.count() + 1}"
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)

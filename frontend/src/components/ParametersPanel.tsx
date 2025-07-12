@@ -41,6 +41,7 @@ const ParametersPanel: React.FC<ParametersPanelProps> = ({
   };
 
   const handleNextTurn = () => {
+    console.log('ParametersPanel: отправляем параметры на следующий ход:', localParameters);
     onNextTurn(localParameters);
   };
 

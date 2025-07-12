@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import './AuthPage.css';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,6 +14,14 @@ const AuthPage: React.FC = () => {
   const [success, setSuccess] = useState('');
 
   const { login, register } = useAuth();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (isLogin && success) {
+      // После успешного входа редиректим на главную (игровую) страницу
+      navigate('/');
+    }
+  }, [isLogin, success, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

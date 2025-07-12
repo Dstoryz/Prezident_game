@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { gameApi } from '../services/api';
-import { EconomicIndicators } from '../types/game';
 import './GameChart.css';
 
 interface GameChartProps {
@@ -37,11 +36,7 @@ const GameChart: React.FC<GameChartProps> = ({ gameId, refreshTrigger = 0 }) => 
   const [loading, setLoading] = useState(false);
   const [visibleLines, setVisibleLines] = useState<string[]>(['gdp_growth', 'inflation', 'unemployment', 'president_rating']);
 
-  useEffect(() => {
-    loadChartData();
-  }, [gameId, refreshTrigger]);
-
-  const loadChartData = React.useCallback(async () => {
+  const loadChartData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await gameApi.getGameHistory(gameId);
@@ -67,6 +62,10 @@ const GameChart: React.FC<GameChartProps> = ({ gameId, refreshTrigger = 0 }) => 
       setLoading(false);
     }
   }, [gameId]);
+
+  useEffect(() => {
+    loadChartData();
+  }, [gameId, refreshTrigger, loadChartData]);
 
   const handleLineToggle = (key: string) => {
     setVisibleLines((prev) =>

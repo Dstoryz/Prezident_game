@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './CreateGameForm.css';
 
 interface CreateGameFormProps {
@@ -16,13 +18,15 @@ interface GameFormData {
 }
 
 const CreateGameForm: React.FC<CreateGameFormProps> = ({ onGameCreated }) => {
-  const [formData, setFormData] = useState<GameFormData>({
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
     player_name: '',
-    difficulty: 'medium',
-    gdp: 1000000,
-    population: 100000,
-    inflation: 2.0,
-    unemployment: 5.0,
+    difficulty: 'enhanced', // всегда расширенная модель
+    gdp: 60000000000,
+    population: 9400000,
+    inflation: 6,
+    unemployment: 4,
     budget_deficit: 0.0
   });
   
@@ -35,6 +39,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ onGameCreated }) => {
       ...prev,
       [name]: name === 'player_name' ? value : parseFloat(value)
     }));
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/auth');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,6 +76,11 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ onGameCreated }) => {
 
   return (
     <div className="create-game-form">
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+        <button onClick={handleLogout} className="logout-btn" style={{ background: '#dc3545', color: 'white', border: 'none', borderRadius: 8, padding: '8px 18px', fontWeight: 600, cursor: 'pointer' }}>
+          Выйти
+        </button>
+      </div>
       <h2>🎮 Создать новую игру</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -82,6 +96,8 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ onGameCreated }) => {
           />
         </div>
 
+        {/* Удаляю/комментирую выпадающий список выбора сложности */}
+        {/*
         <div className="form-group">
           <label htmlFor="difficulty">Сложность:</label>
           <select
@@ -95,6 +111,7 @@ const CreateGameForm: React.FC<CreateGameFormProps> = ({ onGameCreated }) => {
             <option value="hard">Сложная</option>
           </select>
         </div>
+        */}
 
         <div className="form-group">
           <label htmlFor="gdp">Начальный ВВП:</label>

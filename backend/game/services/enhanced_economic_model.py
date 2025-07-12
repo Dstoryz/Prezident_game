@@ -78,16 +78,16 @@ class EnhancedEconomicModel:
         # Параметры кризисов
         self.crisis_probability = CRISIS_PROBABILITY_BASE
         
-        # Начальные значения из конфига
-        self.initial_capital_industry = INITIAL_GDP * INDUSTRY_SHARE
-        self.initial_capital_services = INITIAL_GDP * SERVICES_SHARE
-        self.initial_labor_industry = INDUSTRY_SHARE
-        self.initial_labor_services = SERVICES_SHARE
+        # Начальные значения для Беларуси
+        self.initial_capital_industry = 60_000_000_000 * 0.4  # 24 млрд USD
+        self.initial_capital_services = 60_000_000_000 * 0.6  # 36 млрд USD
+        self.initial_labor_industry = 0.35  # 35% рабочей силы
+        self.initial_labor_services = 0.65  # 65% рабочей силы
         self.initial_technology_industry = 1.0
         self.initial_technology_services = 1.0
-        self.initial_population = INITIAL_POPULATION
+        self.initial_population = 9_400_000  # 9.4 млн человек
         self.initial_exchange_rate = 1.0
-        self.initial_money_supply = INITIAL_GDP
+        self.initial_money_supply = 60_000_000_000 * 0.8  # 48 млрд USD
         self.initial_gold_reserves = 100.0
         self.initial_external_debt = 0.0
         
@@ -283,21 +283,21 @@ class EnhancedEconomicModel:
             prev_industry_tech = previous_indicators.get('industry_technology', self.initial_technology_industry)
             prev_services_tech = previous_indicators.get('services_technology', self.initial_technology_services)
         else:
-            # Начальные значения
-            prev_gdp = 1000.0
+            # Начальные значения для Беларуси
+            prev_gdp = 60_000_000_000.0  # 60 млрд USD
             prev_inflation = self.base_inflation
             prev_unemployment = self.base_unemployment
             prev_exchange_rate = self.initial_exchange_rate
-            prev_money_supply = self.initial_money_supply
+            prev_money_supply = prev_gdp * 0.8  # 80% от ВВП
             prev_gold_reserves = self.initial_gold_reserves
             prev_external_debt = self.initial_external_debt
-            prev_population = self.initial_population
+            prev_population = 9_400_000.0  # 9.4 млн человек
             prev_mood = 50.0
             
-            prev_industry_capital = self.initial_capital_industry
-            prev_services_capital = self.initial_capital_services
-            prev_industry_labor = self.initial_labor_industry
-            prev_services_labor = self.initial_labor_services
+            prev_industry_capital = prev_gdp * 0.4  # 40% ВВП
+            prev_services_capital = prev_gdp * 0.6  # 60% ВВП
+            prev_industry_labor = 0.35  # 35% рабочей силы
+            prev_services_labor = 0.65  # 65% рабочей силы
             prev_industry_tech = self.initial_technology_industry
             prev_services_tech = self.initial_technology_services
         
@@ -518,27 +518,28 @@ class EnhancedEconomicModel:
         return max(0.0, min(100.0, rating)) 
 
     def initialize_economy(self, initial_params: Dict[str, float]) -> Dict[str, float]:
-        """Инициализация экономики с начальными параметрами"""
-        gdp = initial_params.get('gdp', 1000000)
-        population = initial_params.get('population', 100000) / 1000000  # Конвертируем в миллионы
-        inflation = initial_params.get('inflation', 2.0)
-        unemployment = initial_params.get('unemployment', 5.0)
+        """Инициализация экономики с начальными параметрами Беларуси"""
+        # Реалистичные показатели Беларуси (2023-2024)
+        gdp = initial_params.get('gdp', 60_000_000_000)  # ~60 млрд USD
+        population = initial_params.get('population', 9_400_000)  # ~9.4 млн человек
+        inflation = initial_params.get('inflation', 6.0)  # ~6% годовых
+        unemployment = initial_params.get('unemployment', 4.0)  # ~4%
         budget_deficit = initial_params.get('budget_deficit', 0.0)
         
-        # Создаем начальные сектора
+        # Создаем начальные сектора (промышленность и услуги)
         sector_data = {
             'industry': SectorData(
-                capital=gdp * 0.6,
-                labor=0.35,
+                capital=gdp * 0.4,  # 40% ВВП - промышленность
+                labor=0.35,  # 35% рабочей силы
                 technology=1.0,
-                output=gdp * 0.6,
+                output=gdp * 0.4,
                 alpha=0.4
             ),
             'services': SectorData(
-                capital=gdp * 0.4,
-                labor=0.65,
+                capital=gdp * 0.6,  # 60% ВВП - услуги
+                labor=0.65,  # 65% рабочей силы
                 technology=1.0,
-                output=gdp * 0.4,
+                output=gdp * 0.6,
                 alpha=0.3
             )
         }
@@ -546,7 +547,7 @@ class EnhancedEconomicModel:
         # Рассчитываем секторальный ВВП
         sectoral_gdp = self.calculate_sectoral_gdp(sector_data)
         
-        # Рассчитываем торговый баланс
+        # Рассчитываем торговый баланс (Беларусь - экспортно-ориентированная экономика)
         trade_data = self.calculate_trade_balance(gdp, 1.0, 5.0)
         
         # Рассчитываем бюджет

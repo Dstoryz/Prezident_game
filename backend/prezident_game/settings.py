@@ -147,6 +147,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -203,6 +204,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3001",
     "http://localhost:3002",
     "http://localhost:3003",
+    "http://192.168.0.102:3000",
 ]
 # Убираю CORS_ALLOW_ALL_ORIGINS, чтобы не было конфликта
 # SESSION/CSRF cookies
@@ -225,7 +227,10 @@ ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'  # Отключаем верификацию email для демо
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']  # Убираем username*
-ACCOUNT_EMAIL_REQUIRED = True  # Email обязателен
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Президент] '
 
 # Social account settings

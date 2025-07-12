@@ -181,42 +181,42 @@ const EnhancedGameDashboard: React.FC<EnhancedGameDashboardProps> = ({ gameId, o
           <div className="indicators-grid">
             <div className="indicator">
               <label>ВВП (общий)</label>
-              <span className="value">{indicators.gdp_absolute.toFixed(2)} млн $</span>
-              <span className={`change ${indicators.gdp_growth >= 0 ? 'positive' : 'negative'}`}>
-                {indicators.gdp_growth >= 0 ? '+' : ''}{indicators.gdp_growth.toFixed(2)}%
+              <span className="value">{indicators && indicators.gdp_absolute !== undefined ? indicators.gdp_absolute.toFixed(2) : '—'} млн $</span>
+              <span className={`change ${indicators && indicators.gdp_growth !== undefined && indicators.gdp_growth >= 0 ? 'positive' : 'negative'}`}>
+                {indicators && indicators.gdp_growth !== undefined ? (indicators.gdp_growth >= 0 ? '+' : '') + indicators.gdp_growth.toFixed(2) + '%' : '—'}
               </span>
             </div>
             
             <div className="indicator">
               <label>Промышленность</label>
-              <span className="value">{indicators.industry_output.toFixed(2)} млн $</span>
-              <span className="share">({((indicators.industry_output / indicators.gdp_absolute) * 100).toFixed(1)}%)</span>
+              <span className="value">{indicators && indicators.industry_output !== undefined ? indicators.industry_output.toFixed(2) : '—'} млн $</span>
+              <span className="share">{indicators && indicators.industry_output !== undefined && indicators.gdp_absolute ? `(${((indicators.industry_output / indicators.gdp_absolute) * 100).toFixed(1)}%)` : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Услуги</label>
-              <span className="value">{indicators.services_output.toFixed(2)} млн $</span>
-              <span className="share">({((indicators.services_output / indicators.gdp_absolute) * 100).toFixed(1)}%)</span>
+              <span className="value">{indicators && indicators.services_output !== undefined ? indicators.services_output.toFixed(2) : '—'} млн $</span>
+              <span className="share">{indicators && indicators.services_output !== undefined && indicators.gdp_absolute ? `(${((indicators.services_output / indicators.gdp_absolute) * 100).toFixed(1)}%)` : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Инфляция</label>
-              <span className={`value ${indicators.inflation > 5 ? 'negative' : 'positive'}`}>
-                {indicators.inflation.toFixed(2)}%
+              <span className={`value ${indicators && indicators.inflation !== undefined && indicators.inflation > 5 ? 'negative' : 'positive'}`}>
+                {indicators && indicators.inflation !== undefined ? indicators.inflation.toFixed(2) + '%' : '—'}
               </span>
             </div>
             
             <div className="indicator">
               <label>Безработица</label>
-              <span className={`value ${indicators.unemployment > 8 ? 'negative' : 'positive'}`}>
-                {indicators.unemployment.toFixed(2)}%
+              <span className={`value ${indicators && indicators.unemployment !== undefined && indicators.unemployment > 8 ? 'negative' : 'positive'}`}>
+                {indicators && indicators.unemployment !== undefined ? indicators.unemployment.toFixed(2) + '%' : '—'}
               </span>
             </div>
             
             <div className="indicator">
               <label>Рейтинг президента</label>
-              <span className={`value ${indicators.president_rating > 50 ? 'positive' : 'negative'}`}>
-                {indicators.president_rating.toFixed(1)}%
+              <span className={`value ${indicators && indicators.president_rating !== undefined && indicators.president_rating > 50 ? 'positive' : 'negative'}`}>
+                {indicators && indicators.president_rating !== undefined ? indicators.president_rating.toFixed(1) + '%' : '—'}
               </span>
             </div>
           </div>
@@ -228,34 +228,34 @@ const EnhancedGameDashboard: React.FC<EnhancedGameDashboardProps> = ({ gameId, o
           <div className="indicators-grid">
             <div className="indicator">
               <label>Ключевая ставка</label>
-              <span className="value">{indicators.interest_rate.toFixed(2)}%</span>
+              <span className="value">{indicators && indicators.interest_rate !== undefined ? indicators.interest_rate.toFixed(2) + '%' : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Обменный курс</label>
-              <span className="value">{indicators.exchange_rate.toFixed(3)}</span>
+              <span className="value">{indicators && indicators.exchange_rate !== undefined ? indicators.exchange_rate.toFixed(3) : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Денежная масса</label>
-              <span className="value">{indicators.money_supply.toFixed(2)} млн $</span>
+              <span className="value">{indicators && indicators.money_supply !== undefined ? indicators.money_supply.toFixed(2) + ' млн $' : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Золотой запас</label>
-              <span className="value">{indicators.gold_reserves.toFixed(2)} млн $</span>
+              <span className="value">{indicators && indicators.gold_reserves !== undefined ? indicators.gold_reserves.toFixed(2) + ' млн $' : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Внешний долг</label>
-              <span className={`value ${indicators.external_debt > 0 ? 'negative' : 'positive'}`}>
-                {indicators.external_debt.toFixed(2)} млн $
+              <span className={`value ${indicators && indicators.external_debt !== undefined && indicators.external_debt > 0 ? 'negative' : 'positive'}`}>
+                {indicators && indicators.external_debt !== undefined ? indicators.external_debt.toFixed(2) + ' млн $' : '—'}
               </span>
             </div>
             
             <div className="indicator">
               <label>Население</label>
-              <span className="value">{indicators.population.toFixed(2)} млн чел.</span>
+              <span className="value">{indicators && indicators.population !== undefined ? indicators.population.toFixed(2) + ' млн чел.' : '—'}</span>
             </div>
           </div>
         </div>
@@ -266,29 +266,29 @@ const EnhancedGameDashboard: React.FC<EnhancedGameDashboardProps> = ({ gameId, o
           <div className="indicators-grid">
             <div className="indicator">
               <label>Доходы</label>
-              <span className="value positive">{budget.total_revenue.toFixed(2)} млн $</span>
+              <span className="value positive">{budget && budget.total_revenue !== undefined ? budget.total_revenue.toFixed(2) + ' млн $' : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Расходы</label>
-              <span className="value negative">{budget.total_spending.toFixed(2)} млн $</span>
+              <span className="value negative">{budget && budget.total_spending !== undefined ? budget.total_spending.toFixed(2) + ' млн $' : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Баланс</label>
-              <span className={`value ${budget.budget_balance >= 0 ? 'positive' : 'negative'}`}>
-                {budget.budget_balance >= 0 ? '+' : ''}{budget.budget_balance.toFixed(2)} млн $
+              <span className={`value ${budget && budget.budget_balance !== undefined && budget.budget_balance >= 0 ? 'positive' : 'negative'}`}>
+                {budget && budget.budget_balance !== undefined ? (budget.budget_balance >= 0 ? '+' : '') + budget.budget_balance.toFixed(2) + ' млн $' : '—'}
               </span>
             </div>
             
             <div className="indicator">
               <label>Соц. трансферты</label>
-              <span className="value">{(budget.social_transfers || 0).toFixed(2)} млн $</span>
+              <span className="value">{budget && budget.social_transfers !== undefined ? budget.social_transfers.toFixed(2) + ' млн $' : '—'}</span>
             </div>
             
             <div className="indicator">
               <label>Накопления</label>
-              <span className="value">{budget.accumulated_reserves.toFixed(2)} млн $</span>
+              <span className="value">{budget && budget.accumulated_reserves !== undefined ? budget.accumulated_reserves.toFixed(2) + ' млн $' : '—'}</span>
             </div>
           </div>
         </div>
