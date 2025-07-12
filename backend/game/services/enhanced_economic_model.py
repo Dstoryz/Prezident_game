@@ -178,7 +178,7 @@ class EnhancedEconomicModel:
     
     def calculate_budget(self, gdp: float, tax_rate: float, trade_data: Dict[str, float],
                         government_spending: float, social_transfers: float,
-                        spending_priorities: Dict[str, float]) -> Dict[str, float]:
+                        spending_priorities: Dict[str, float]) -> Dict[str, Any]:
         """Бюджетные показатели"""
         # Доходы
         tax_revenue = gdp * (tax_rate / 100)
@@ -361,8 +361,9 @@ class EnhancedEconomicModel:
         
         # 10. Демография
         gdp_per_capita = total_gdp / prev_population if prev_population > 0 else 0
+        healthcare_spending = budget_data['spending_breakdown']['healthcare'] if isinstance(budget_data['spending_breakdown'], dict) else 50.0
         demographic_data = self.calculate_demographics(prev_population, gdp_per_capita, 
-                                                     unemployment, budget_data['spending_breakdown']['healthcare'])
+                                                     unemployment, healthcare_spending)
         
         # 11. Настроение населения
         social_transfers_per_capita = parameters.social_transfers / prev_population if prev_population > 0 else 0
@@ -406,9 +407,10 @@ class EnhancedEconomicModel:
             demographic_data['population'] += crisis.get('population_impact', 0.0)
         
         # 15. Рейтинг президента
+        healthcare_quality = budget_data['spending_breakdown']['healthcare'] if isinstance(budget_data['spending_breakdown'], dict) else 50.0
         president_rating = self.calculate_president_rating(gdp_growth, inflation, unemployment, 
                                                          public_mood, budget_data['budget_balance'], 
-                                                         budget_data['spending_breakdown']['healthcare'])
+                                                         healthcare_quality)
         
         # Возвращаем все показатели
         return {
@@ -446,11 +448,11 @@ class EnhancedEconomicModel:
             'total_spending': round(budget_data['total_spending'], 2),
             'budget_balance': round(budget_data['budget_balance'], 2),
             'social_transfers': round(budget_data['social_transfers'], 2),
-            'education_spending': round(budget_data['spending_breakdown']['education'], 2),
-            'healthcare_spending': round(budget_data['spending_breakdown']['healthcare'], 2),
-            'defense_spending': round(budget_data['spending_breakdown']['defense'], 2),
-            'infrastructure_spending': round(budget_data['spending_breakdown']['infrastructure'], 2),
-            'social_spending': round(budget_data['spending_breakdown']['social'], 2),
+            'education_spending': round(budget_data['spending_breakdown']['education'], 2) if isinstance(budget_data['spending_breakdown'], dict) else 0.0,
+            'healthcare_spending': round(budget_data['spending_breakdown']['healthcare'], 2) if isinstance(budget_data['spending_breakdown'], dict) else 0.0,
+            'defense_spending': round(budget_data['spending_breakdown']['defense'], 2) if isinstance(budget_data['spending_breakdown'], dict) else 0.0,
+            'infrastructure_spending': round(budget_data['spending_breakdown']['infrastructure'], 2) if isinstance(budget_data['spending_breakdown'], dict) else 0.0,
+            'social_spending': round(budget_data['spending_breakdown']['social'], 2) if isinstance(budget_data['spending_breakdown'], dict) else 0.0,
             
             # Демографические данные
             'population': round(demographic_data['population'], 2),
@@ -513,7 +515,7 @@ class EnhancedEconomicModel:
         rating = (base_rating + gdp_impact + inflation_impact + unemployment_impact + 
                  mood_impact + budget_impact + healthcare_impact)
         
-        return max(0.0, min(100.0, rating))
+        return max(0.0, min(100.0, rating)) 
 
     def initialize_economy(self, initial_params: Dict[str, float]) -> Dict[str, float]:
         """Инициализация экономики с начальными параметрами"""

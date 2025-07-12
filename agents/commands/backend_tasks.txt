@@ -1,0 +1,28 @@
+TASK_ID: BACKEND_001
+COMMAND: check_python_version
+DESCRIPTION: Проверить версию Python 3.9+
+PRIORITY: 1
+STATUS: pending
+CREATED: 2025-07-12 11:50:00
+COMPLETED: 
+RESULT: 
+
+---
+TASK_ID: BACKEND_002
+COMMAND: check_virtual_env
+DESCRIPTION: Проверить виртуальное окружение
+PRIORITY: 1
+STATUS: pending
+CREATED: 2025-07-12 11:50:00
+COMPLETED: 
+RESULT: 
+
+---
+TASK_ID: BACKEND_003
+COMMAND: install_dependencies
+DESCRIPTION: Установить зависимости из requirements.txt
+PRIORITY: 2
+STATUS: pending
+CREATED: 2025-07-12 11:50:00
+COMPLETED: 
+RESULT: 

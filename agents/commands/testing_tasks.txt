@@ -1,0 +1,28 @@
+TASK_ID: TESTING_001
+COMMAND: run_django_tests
+DESCRIPTION: Запустить Django тесты
+PRIORITY: 2
+STATUS: pending
+CREATED: 2025-07-12 11:50:00
+COMPLETED: 
+RESULT: 
+
+---
+TASK_ID: TESTING_002
+COMMAND: test_api_endpoints
+DESCRIPTION: Протестировать API endpoints
+PRIORITY: 2
+STATUS: pending
+CREATED: 2025-07-12 11:50:00
+COMPLETED: 
+RESULT: 
+
+---
+TASK_ID: TESTING_003
+COMMAND: check_code_quality
+DESCRIPTION: Проверить качество кода
+PRIORITY: 3
+STATUS: pending
+CREATED: 2025-07-12 11:50:00
+COMPLETED: 
+RESULT: 
